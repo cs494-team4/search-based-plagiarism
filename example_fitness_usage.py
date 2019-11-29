@@ -6,10 +6,11 @@ from fitness.RefactorFitness import RefactorFitness
                       similarity_client='moss')"""
 
 fit = RefactorFitness(codebase='codebases/sample1/sample_original.py',
-                      refactorer_engine='test_dummy',
+                      refactorer_engine='custom',
                       similarity_client='test_dummy')
 
-refactorings = fit.available_refactorings  # TODO Important: Find a robust representation (refactorings + TARGET)
+# TODO Important: Find a robust representation (refactorings + TARGET)
+refactorings = fit.available_refactorings
 
 
 # repeated in the GA
@@ -18,4 +19,3 @@ sequences.append(list())
 fitness_value = fit(sequences)[0]
 
 print(fitness_value)
-
