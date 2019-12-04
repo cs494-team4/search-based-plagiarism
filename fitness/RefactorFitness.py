@@ -1,6 +1,8 @@
 from fitness.similarity.SimilarityClientFactory import SimilarityClientFactory
 from fitness.refactor.RefactorerFactory import RefactorerFactory
 
+import copy
+
 
 class RefactorFitness:
 
@@ -15,14 +17,14 @@ class RefactorFitness:
         """
 
         self.codebase = codebase
-        self.refactor = RefactorerFactory.create(refactorer_engine, codebase)
+        self.refactor = RefactorerFactory.create(
+            refactorer_engine, copy.deepcopy(codebase))
         self.similarity = SimilarityClientFactory.create(similarity_client)
 
         self.available_refactorings = self.refactor.refactorings
 
     def evaluate(self, sequences):
         # TODO add support for cache
-
         """
         :param sequences: list of candidates (represented by a list of refactorings) to be applied to the codebase
         :return: list of fitness values of the corresponding candidates
