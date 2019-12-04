@@ -18,9 +18,8 @@ class Refactorer(object):
     @abc.abstractmethod
     def retrieve_refactorings(self):
         """
-        generate and return a list of available refactorings offered by the
-        refactoring framework
-        # TODO find general representation based on refactoring framework
+        generate and return a dictionary with
+        {(name_of_refactoring : [list of targets]),...} of all available refactorings
 
         :return: a list of available refactorings
         """
@@ -33,14 +32,22 @@ class Refactorer(object):
         the codebase and saves the result to a local directory
         (-> uses unique file names)
 
-        :param sequence: a sequence of refactorings to apply to the codebase
+        :param sequence: a sequence of refactorings to apply to the codebase [(refactoring_type, target_object)]
         :return: file path to the saved codebase
         """
         pass
 
     def __init__(self, codebase):
-        self.codebase_repr = self.parse_codebase(codebase)
-        self.refactorings = self.retrieve_refactorings()
+        """
+        needs to do
+            self.codebase_repr = self.parse_codebase(codebase)
+            self.refactorings = self.retrieve_refactorings()
+        at one point
+
+        :param codebase: path to codebase
+        """
+        pass
+
 
     def __call__(self, *args, **kwargs):
         return self.apply(*args, **kwargs)
