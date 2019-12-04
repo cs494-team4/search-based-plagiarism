@@ -1,7 +1,7 @@
 from fitness.RefactorFitness import RefactorFitness
 
 """
-Tests a given specified refactoring on a codebase.
+Tests a specified refactoring on a codebase.
 The edited file will be stored in temp/
 """
 
