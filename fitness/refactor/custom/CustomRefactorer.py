@@ -6,15 +6,18 @@ import os
 from .operators.ForToWhile import ForToWhile
 from .operators.SplitAndConditional import SplitAndConditional
 from .operators.MergeNestedIfStatement import MergeNestedIfStatement
+from .operators.SplitOrConditional import SplitOrConditional
+
 # [In Progress] custom refactorer
 # method-level refactoring operators
 
 
 _operation_classes = {
-            "ForToWhile": ForToWhile,
-            "SplitAndConditional": SplitAndConditional,
-            "MergeNestedIfStatement": MergeNestedIfStatement
-        }
+    "ForToWhile": ForToWhile,
+    "SplitAndConditional": SplitAndConditional,
+    "MergeNestedIfStatement": MergeNestedIfStatement,
+    "SplitOrConditional": SplitOrConditional
+}
 
 refactored_files_path = 'temp/'
 

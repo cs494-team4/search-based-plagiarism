@@ -9,12 +9,11 @@ The edited file will be stored in temp/
 file_path = "codebases/sample1/test_file.py"
 
 # Class name of the refactoring you want to test
-refactoring_type = "MergeNestedIfStatement"
+refactoring_type = "SplitOrConditional"
 
 # Index of target you want to apply the refactoring to
 # -1 if you just want a display of the targets (to check if there are any)
 target_index = 0
-
 
 ###################################################
 
@@ -31,5 +30,3 @@ if target_index >= 0:
     sequences = list()
     sequences.append([(refactoring_type, targets[target_index])])
     fitness_value = fit(sequences)[0]
-
-

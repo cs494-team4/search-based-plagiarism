@@ -1,10 +1,5 @@
 a = True
 b = False
 
-if a:
+if a or b:
     print(1)
-    if b:
-        print(2)
-    else:
-        print(3)
-    print(4)
