@@ -54,9 +54,8 @@ class AndConditionalSplitter(astor.TreeWalk):
                 new_else_if.test = ast.UnaryOp(ast.Not(), self.cur_node.test)
                 new_else_if.body = orelse_list
                 new_else_if.orelse = []
-
                 index = parent_list.index(self.cur_node)
-                parent_list[index: index+1] = [new_upper_if, new_else_if]
+                parent_list[index: index + 1] = [new_upper_if, new_else_if]
             else:
                 self.replace(new_upper_if)
 
@@ -73,38 +72,3 @@ class SearchSplitAbleIfAnd(astor.TreeWalk):
         cond_stmt = if_stmt.test
         if isinstance(cond_stmt.op, ast.And):
             self.targets.append(id(if_stmt))
-
-
-'''
-class ReplaceForToWhile(astor.TreeWalk):
-    def set_target(self, target):
-        self.target = target
-
-    def pre_For(self):
-        if id(self.cur_node) == self.target:
-            print("*** Refactor For => While: Node {}".format(self.target))
-            # before
-            print("[Before Refactoring]")
-            print(astor.to_source(self.cur_node))
-
-            _target = astor.to_source(self.cur_node.target).strip()
-            _iter = astor.to_source(self.cur_node.iter).strip()
-            body = self.cur_node.body
-
-            module_stmt = ast.parse("i=0\nwhile i<len({}): i+=1".format(_iter))
-            while_stmt = module_stmt.body[1]
-
-            body.insert(0, ast.parse("{}={}[i]".format(_target, _iter)))
-            body.append(ast.parse("i+=1"))
-
-            while_stmt.body = body
-            while_stmt.orelse = self.cur_node.orelse
-
-            print_node(module_stmt)
-            self.replace(module_stmt)
-
-            # after
-            print("[After Refactoring]")
-            print_node(module_stmt)
-
-'''

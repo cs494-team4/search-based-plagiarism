@@ -6,7 +6,8 @@ import logging
 try:
     from urllib.request import urlopen
 except ImportError:
-    from urllib2 import urlopen
+    a = 5
+    # from urllib2 import urlopen
 
 
 def get_score(original_file, refactored_file):
