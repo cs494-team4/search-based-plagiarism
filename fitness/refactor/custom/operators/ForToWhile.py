@@ -63,7 +63,6 @@ class ReplaceForToWhile(astor.TreeWalk):
 class SearchRefactorablesForLoop(astor.TreeWalk):
     def __init__(self):
         astor.TreeWalk.__init__(self)
-
         self.targets = []   # save parent nodes
 
     def pre_For(self):

@@ -4,12 +4,14 @@ import astor
 import ast
 import os
 from .operators.ForToWhile import ForToWhile
+from .operators.SplitAndConditional import SplitAndConditional
 # [In Progress] custom refactorer
 # method-level refactoring operators
 
 
 _operation_classes = {
             "ForToWhile": ForToWhile,
+            "SplitAndConditional": SplitAndConditional,
         }
 
 refactored_files_path = 'temp/'
