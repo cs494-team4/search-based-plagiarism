@@ -70,5 +70,5 @@ class SearchSplitAbleIfAnd(astor.TreeWalk):
     def pre_If(self):
         if_stmt = self.cur_node
         cond_stmt = if_stmt.test
-        if isinstance(cond_stmt.op, ast.And):
+        if isinstance(cond_stmt, ast.BoolOp) and isinstance(cond_stmt.op, ast.And):
             self.targets.append(id(if_stmt))
