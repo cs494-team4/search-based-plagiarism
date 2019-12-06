@@ -37,18 +37,19 @@ class CustomRefactorer(Refactorer):
 
         # instantiate all refactoring operators
         for _class in _operation_classes:
-            self.operators[_class] = _operation_classes[_class](self.codebase_repr)
+            self.operators[_class] = \
+                _operation_classes[_class](self.codebase_repr)
         self.refactorings = self.retrieve_refactorings()
 
-        if not os.path.exists("temp"):
-            os.makedirs("temp")
+        if not os.path.exists(refactored_files_path):
+            os.makedirs(refactored_files_path)
 
     def retrieve_refactorings(self):
-
         refactor_candidates = dict()
 
         for operator_name in self.operators:
-            refactor_candidates[operator_name] = self.operators[operator_name].search_targets()
+            refactor_candidates[operator_name] = \
+                self.operators[operator_name].search_targets()
 
         return refactor_candidates
 
