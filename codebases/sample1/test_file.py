@@ -1,5 +1,10 @@
-a = True
-b = False
+def abc():
+    print(0)
+    if a:
+        print(1)
+        return 1
+    print(3)
 
-if a or b:
-    print(1)
+
+a = True
+abc()
