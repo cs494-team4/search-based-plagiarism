@@ -7,15 +7,19 @@ fit = RefactorFitness(codebase='codebases/sample1/sample_original.py',
 
 
 refactorings = fit.available_refactorings
+print('candidates: {}\n'.format(refactorings))
 
-refactoring_type = refactorings.keys()[0]
+refactoring_type = list(refactorings.keys())[0]
 target = refactorings[refactoring_type][0]
 
-print('candidates: {}\n'.format(refactorings))
 
 # repeated in the GA
 sequences = list()
-sequences.append((refactoring_type, target))
+
+sequence = list()
+sequence.append((refactoring_type, target))
+
+sequences.append(sequence)
 
 fitness_value = fit(sequences)[0]
 
