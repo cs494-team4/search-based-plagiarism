@@ -7,7 +7,7 @@ from .operators.ForToWhile import ForToWhile
 from .operators.SplitAndConditional import SplitAndConditional
 from .operators.MergeNestedIfStatement import MergeNestedIfStatement
 from .operators.SplitOrConditional import SplitOrConditional
-from .operators.AddElseAfterReturn import AddElseAfterReturn
+from .operators.AddElseAfterReturnBreakContinue import AddElseAfterReturnBreakContinue
 
 # [In Progress] custom refactorer
 # method-level refactoring operators
@@ -18,7 +18,7 @@ _operation_classes = {
     "SplitAndConditional": SplitAndConditional,
     "MergeNestedIfStatement": MergeNestedIfStatement,
     "SplitOrConditional": SplitOrConditional,
-    "AddElseAfterReturn": AddElseAfterReturn
+    "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue
 
 }
 
