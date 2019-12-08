@@ -8,6 +8,7 @@ from .operators.SplitAndConditional import SplitAndConditional
 from .operators.MergeNestedIfStatement import MergeNestedIfStatement
 from .operators.SplitOrConditional import SplitOrConditional
 from .operators.AddElseAfterReturnBreakContinue import AddElseAfterReturnBreakContinue
+from .operators.StaticToInstance import StaticToInstance
 
 # [In Progress] custom refactorer
 # method-level refactoring operators
@@ -18,7 +19,8 @@ _operation_classes = {
     "SplitAndConditional": SplitAndConditional,
     "MergeNestedIfStatement": MergeNestedIfStatement,
     "SplitOrConditional": SplitOrConditional,
-    "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue
+    "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
+    "StaticToInstance": StaticToInstance
 
 }
 
