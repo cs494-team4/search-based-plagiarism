@@ -34,10 +34,9 @@ class ReplaceForToWhile(astor.TreeWalk):
 
     def pre_For(self):
         if id(self.cur_node) == self.target:
-            print("*** Refactor For => While: Node {}".format(self.target))
-            # before
-            print("[Before Refactoring]")
-            print(astor.to_source(self.cur_node))
+            # print("*** Refactor For => While: Node {}".format(self.target))
+            # print("[Before Refactoring]")
+            # print(astor.to_source(self.cur_node))
 
             _target = astor.to_source(self.cur_node.target).strip()
             _iter = astor.to_source(self.cur_node.iter).strip()
@@ -52,12 +51,10 @@ class ReplaceForToWhile(astor.TreeWalk):
             while_stmt.body = body
             while_stmt.orelse = self.cur_node.orelse
 
-            print_node(module_stmt)
             self.replace(module_stmt)
 
-            # after
-            print("[After Refactoring]")
-            print_node(module_stmt)
+            # print("[After Refactoring]")
+            # print_node(module_stmt)
 
 
 class SearchRefactorablesForLoop(astor.TreeWalk):
