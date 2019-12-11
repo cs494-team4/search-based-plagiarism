@@ -32,8 +32,10 @@ class Refactorer(object):
         the codebase and saves the result to a local directory
         (-> uses unique file names)
 
+        creates a boolean list that indicates what refactorings were applied successfully
+
         :param sequence: a sequence of refactorings to apply to the codebase [(refactoring_type, target_object)]
-        :return: file path to the saved codebase
+        :return: (path to the saved codebase, boolean list of success indicators)
         """
         pass
 
@@ -47,7 +49,6 @@ class Refactorer(object):
         :param codebase: path to codebase
         """
         pass
-
 
     def __call__(self, *args, **kwargs):
         return self.apply(*args, **kwargs)

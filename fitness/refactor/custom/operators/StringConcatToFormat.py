@@ -14,7 +14,7 @@ class StringConcatToFormat(RefactorOperator):
     def apply(self, target):
         replacer = StringConcatToFormatReplacer(target)
         replacer.walk(self.codebase)
-        return self.codebase
+        return self.codebase, replacer.applied
 
     def search_targets(self):
         candidates = list()
@@ -24,15 +24,21 @@ class StringConcatToFormat(RefactorOperator):
             [target for target in searcher.targets])
         return candidates
 
+    @staticmethod
+    def is_applicable(node):
+        return True
+
 
 class StringConcatToFormatReplacer(astor.TreeWalk):
 
     def __init__(self, target):
         astor.TreeWalk.__init__(self)
         self.target = target
+        self.applied = False
 
     def pre_BinOp(self):
-        if id(self.cur_node) == self.target:
+        if id(self.cur_node) == self.target and StringConcatToFormat.is_applicable(self.cur_node):
+            self.applied = True
             self.cur_node.left
             self.cur_node.right
             self.replace(ast.Call(ast.Name("pow", ast.Store()), [self.cur_node.left, self.cur_node.right], []))
@@ -45,13 +51,6 @@ class SearchStringConcat(astor.TreeWalk):
         astor.TreeWalk.__init__(self)
         self.targets = []  # save parent nodes
 
-    def isString(self, node):
-        return True
-    # TODO
-
     def pre_BinOp(self):
-        if isinstance(self.cur_node.op, ast.Add) \
-                and self.isString(self.cur_node.left) \
-                and self.isString(self.cur_node.right):
-
+        if StringConcatToFormat.is_applicable(self.cur_node):
             self.targets.append(id(self.cur_node))

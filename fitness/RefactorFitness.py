@@ -27,14 +27,19 @@ class RefactorFitness:
         # TODO add support for cache
         """
         :param sequences: list of candidates (represented by a list of refactorings) to be applied to the codebase
-        :return: list of fitness values of the corresponding candidates
+        :return: list of tuples (fitness value, boolean list that indicate application success for each refactorings)
+                 of the corresponding candidates
         """
 
         refactored_codebases = list()
+        success_indicators = list()
         for sequence in sequences:
-            refactored_codebases.append(self.refactor(sequence))
+            refactored_codebase, success_indcator = self.refactor(sequence)
+            refactored_codebases.append(refactored_codebase)
+            success_indicators.append(success_indcator)
 
-        return self.similarity(self.codebase, refactored_codebases)
+        return [(score, success_indicators[i])
+                for i, score in enumerate(self.similarity(self.codebase, refactored_codebases))]
 
     def __call__(self, *args, **kwargs):
         return self.evaluate(*args, **kwargs)
