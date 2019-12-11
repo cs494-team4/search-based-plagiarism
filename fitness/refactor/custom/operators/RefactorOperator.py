@@ -9,9 +9,10 @@ class RefactorOperator:
     def apply(self, target):
         """
         apply this refactoring to the target node and return self.codebase
+        and an indicator if the application was successful
 
         :param target: the id of the target object
-        :return: the refactored codebase (self.codebase)
+        :return: Tuple : (the refactored codebase (self.codebase) , boolean if the application was successful)
         """
         pass
 
@@ -23,6 +24,18 @@ class RefactorOperator:
 
         :return: a list of target object ids
         """
+        pass
+
+    @staticmethod
+    @abc.abstractmethod
+    def is_applicable(node):
+        """
+        check if the refactoring is applicable to a given node
+
+        :param node: the node to be checked
+        :return: a boolean indicating if the application is possible
+        """
+
         pass
 
     def __init__(self, codebase):

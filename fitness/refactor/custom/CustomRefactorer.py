@@ -61,9 +61,11 @@ class CustomRefactorer(Refactorer):
 
     def apply(self, sequence, *args, **kwargs):
         codebase = self.codebase_repr
+        success_indicies = list()
 
         for operator_name, target in sequence:
-            codebase = self.operators[operator_name].apply(target)
+            codebase, success = self.operators[operator_name].apply(target)
+            success_indicies.append(success)
 
         filename = '{}{}.py'.format(refactored_files_path, id(codebase))
         with open(filename, 'w') as f:
@@ -71,4 +73,4 @@ class CustomRefactorer(Refactorer):
             print(astor.dump_tree(codebase))
             f.write(astor.to_source(codebase))
 
-        return filename
+        return filename, success_indicies

@@ -13,7 +13,7 @@ class OperatorToPow(RefactorOperator):
     def apply(self, target):
         replacer = OperatorToPowReplacer(target)
         replacer.walk(self.codebase)
-        return self.codebase
+        return self.codebase, replacer.applid
 
     def search_targets(self):
         candidates = list()
@@ -23,16 +23,22 @@ class OperatorToPow(RefactorOperator):
             [target for target in searcher.targets])
         return candidates
 
+    @staticmethod
+    def is_applicable(node):
+        return isinstance(node.op, ast.Pow)
+
 
 class OperatorToPowReplacer(astor.TreeWalk):
 
     def __init__(self, target):
         astor.TreeWalk.__init__(self)
         self.target = target
+        self.applied = False
 
     def pre_BinOp(self):
-        if id(self.cur_node) == self.target:
-            self.replace(ast.Call(ast.Name("pow",ast.Store()), [self.cur_node.left, self.cur_node.right], []))
+        if id(self.cur_node) == self.target and OperatorToPow.is_applicable(self.cur_node):
+            self.applied = True
+            self.replace(ast.Call(ast.Name("pow", ast.Store()), [self.cur_node.left, self.cur_node.right], []))
 
 
 class SearchPowOp(astor.TreeWalk):
@@ -41,5 +47,5 @@ class SearchPowOp(astor.TreeWalk):
         self.targets = []  # save parent nodes
 
     def pre_BinOp(self):
-        if isinstance(self.cur_node.op, ast.Pow):
+        if OperatorToPow.is_applicable(self.cur_node):
             self.targets.append(id(self.cur_node))
