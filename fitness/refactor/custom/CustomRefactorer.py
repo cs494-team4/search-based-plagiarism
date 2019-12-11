@@ -10,6 +10,7 @@ from .operators.SplitOrConditional import SplitOrConditional
 from .operators.AddElseAfterReturnBreakContinue import AddElseAfterReturnBreakContinue
 from .operators.PowToOperator import PowToOperator
 from .operators.OperatorToPow import OperatorToPow
+from .operators.FormatToStringConcat import FormatToStringConcat
 
 # [In Progress] custom refactorer
 # method-level refactoring operators
@@ -22,7 +23,8 @@ _operation_classes = {
     "SplitOrConditional": SplitOrConditional,
     "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
     "PowToOperator": PowToOperator,
-    "OperatorToPow" : OperatorToPow
+    "OperatorToPow": OperatorToPow,
+    "FormatToStringConcat": FormatToStringConcat
 
 }
 

@@ -42,5 +42,5 @@ class SearchPow(astor.TreeWalk):
 
     def pre_Call(self):
         call = self.cur_node
-        if call.func.id == "pow":
+        if isinstance(call.func, ast.Name) and call.func.id == "pow":
             self.targets.append(id(self.cur_node))
