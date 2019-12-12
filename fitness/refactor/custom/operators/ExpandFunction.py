@@ -14,7 +14,7 @@ class ExpandFunction(RefactorOperator):
     def apply(self, target):
         replacer = FunctionExpander(target)
         replacer.walk(self.codebase)
-        return self.codebase
+        return self.codebase, replacer.applied
 
     def search_targets(self):
         candidates = list()
