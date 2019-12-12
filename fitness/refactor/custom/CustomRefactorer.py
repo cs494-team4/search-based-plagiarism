@@ -18,6 +18,7 @@ from .operators.Identity import Identity
 
 
 _operation_classes = {
+    "Identity": Identity,
     "ForToWhile": ForToWhile,
     "SplitAndConditional": SplitAndConditional,
     "MergeNestedIfStatement": MergeNestedIfStatement,
@@ -25,8 +26,7 @@ _operation_classes = {
     "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
-    "FormatToStringConcat": FormatToStringConcat,
-    "Identity": Identity
+    "FormatToStringConcat": FormatToStringConcat
 }
 
 refactored_files_path = 'temp/'

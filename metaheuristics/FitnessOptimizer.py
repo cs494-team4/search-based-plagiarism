@@ -11,8 +11,8 @@ TODO
 class FitnessOptimizer(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, possible_elements, fitness_func):
-        self.elements = possible_elements
+    def __init__(self, elements, fitness_func):
+        self.elements = elements
         self.fit = fitness_func
         self.sequence_length = 5    # check if the number of possible elements is smaller than 5
 

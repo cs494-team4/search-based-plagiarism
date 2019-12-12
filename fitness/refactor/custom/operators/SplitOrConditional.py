@@ -38,7 +38,6 @@ class SplitOrConditional(RefactorOperator):
             [target for target in searcher.targets])
         return candidates
 
-    # todo: test
     @staticmethod
     def is_applicable(node):
         return isinstance(node.test, ast.BoolOp) and isinstance(node.test.op, ast.Or)
