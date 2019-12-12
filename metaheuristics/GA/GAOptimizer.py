@@ -25,7 +25,8 @@ class GAOptimizer(FitnessOptimizer):
                          list, toolbox.individual)
 
         toolbox.register("mate", tools.cxTwoPoint)
-        toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.1)
+        # toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.1)
+        toolbox.register("mutate", self.mutate)
         toolbox.register("select", tools.selTournament, tournsize=3)
         toolbox.register("evaluate", self.evaluate)
 
@@ -33,39 +34,35 @@ class GAOptimizer(FitnessOptimizer):
 
     # moves Identity elements to the right
     # e.g. [0,1,0,2] -> [1,2,0,0]
-    def clean_up_individual(self, individual):
+    def clean_up(self, individual):
         return sorted(individual, key=lambda x: 1 if x == self.IDENTITY else 0)
 
     # todo: test mutation algorithm
     # expects cleaned representation
     def mutate(self, individual):
         def add_mutation():
-            new_gene = random.sample(super.elements, 1)[0]
-            index = next(i for i, gene in enumerate(individual) if gene == self.IDENTITY)
-            if not 0 <= index < len(individual):
-                print("Error: add_mutation not possible")
-            else:
-                individual[index] = new_gene
+            ng = random.sample(super.elements, 1)[0]
+            ind = next(i for i, gene in enumerate(individual) if gene == self.IDENTITY)
+            return ind, ng
 
         def min_mutation():
-            index = next(i for i, gene in enumerate(individual) if gene == self.IDENTITY) - 1
-            if not 0 <= index < len(individual):
-                print("Error: min_mutation not possible")
-            else:
-                individual[index] = self.IDENTITY
+            ind = next(i for i, gene in enumerate(individual) if gene == self.IDENTITY) - 1
+            return ind, self.IDENTITY
 
         def rep_mutation():
             useful_genes = [x for x in individual if x != self.IDENTITY]
-            new_gene = random.sample(super.elements, 1)[0]
-            index = random.sample(range(len(useful_genes)), 1)[0]
-            if not 0 <= index < len(individual):
-                print("Error: rep_mutation not possible")
-            else:
-                individual[index] = new_gene
+            ng = random.sample(super.elements, 1)[0]
+            ind = random.sample(range(len(useful_genes)), 1)[0]
+            return ind, ng
 
-        individual = self.clean_up_individual(individual)
+        individual = self.clean_up(individual)
         mutation = random.sample([add_mutation, min_mutation, rep_mutation], 1)[0]
-        mutation()
+        index, new_gene = mutation()
+
+        if not 0 <= index < len(individual):
+            print(f"Error: {mutation} not possible, index: {index} not in [0,{len(individual) - 1}]")
+        else:
+            individual[index] = new_gene
         return individual
 
     def evaluate(self, individual):
