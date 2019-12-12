@@ -13,7 +13,6 @@ class GAOptimizer(FitnessOptimizer):
 
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
         creator.create("Individual", list, fitness=creator.FitnessMin)
-
         toolbox = base.Toolbox()
         toolbox.register("indices", random.sample,
                          range(len(self.elements)), self.sequence_length)
@@ -30,19 +29,27 @@ class GAOptimizer(FitnessOptimizer):
 
         self.toolbox = toolbox
 
+    # add, remove, replace
+    # expects cleaned representation
+    # mutation_rate: P[Mutation is Applied]
+    def mutate(self, individual, mutation_rate):
+        if random.random() < mutation_rate:
+            pass
+        return individual
+
     def evaluate(self, individual):
         sequence = []
         for index in individual:
             sequence.append(self.elements[index])
 
         fit = self.fit([sequence])[0]
-        return (float(fit), )
+        return (float(fit),)
 
     def get_best_individual(self):
         pop = self.evolve_population()
         fitnesses = map(self.toolbox.evaluate, pop)
 
-        best_fit = 10**10
+        best_fit = 10 ** 10
         best_ind = None
         for ind, fit in zip(pop, fitnesses):
             ind.fitness.values = fit
@@ -64,7 +71,7 @@ class GAOptimizer(FitnessOptimizer):
 
         for g in range(NGEN):
             average_fitness = sum(
-                map(lambda x: self.toolbox.evaluate(x)[0], pop))/len(pop)
+                map(lambda x: self.toolbox.evaluate(x)[0], pop)) / len(pop)
             print('{}th generation: {}'.format(g, average_fitness))
 
             # Select the next generation individuals
