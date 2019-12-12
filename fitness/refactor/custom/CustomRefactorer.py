@@ -69,7 +69,6 @@ class CustomRefactorer(Refactorer):
 
         filename = '{}{}.py'.format(refactored_files_path, id(codebase))
         with open(filename, 'w') as f:
-
             print(astor.dump_tree(codebase))
             f.write(astor.to_source(codebase))
 

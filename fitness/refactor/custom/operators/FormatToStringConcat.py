@@ -1,7 +1,5 @@
 import astor
 import ast
-
-from utils import print_node
 from .RefactorOperator import RefactorOperator
 
 
@@ -11,7 +9,7 @@ class FormatToStringConcat(RefactorOperator):
         self.codebase = codebase
         self.targets = []
 
-    def apply(self, target): # return success
+    def apply(self, target):  # return success
         replacer = FormatToStringConcatReplacer(target)
         replacer.walk(self.codebase)
         return self.codebase, replacer.applied
@@ -27,8 +25,8 @@ class FormatToStringConcat(RefactorOperator):
     @staticmethod
     def is_applicable(node):
         return isinstance(node.func, ast.Attribute) \
-                    and node.func.attr == 'format' \
-                    and isinstance(node.func.value, ast.Str)
+               and node.func.attr == 'format' \
+               and isinstance(node.func.value, ast.Str)
 
 
 class FormatToStringConcatReplacer(astor.TreeWalk):
@@ -54,4 +52,3 @@ class SearchFormatString(astor.TreeWalk):
     def pre_Call(self):  # is applicable
         if FormatToStringConcat.is_applicable(self.cur_node):
             self.targets.append(id(self.cur_node))
-

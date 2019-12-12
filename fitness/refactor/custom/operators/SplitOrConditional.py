@@ -4,8 +4,23 @@ import ast
 import utils as u
 from .RefactorOperator import RefactorOperator
 
+'''
+Example:
+a, b = True, True
+if a or b:
+    print(1)
+    
+-->
+a, b = True, True
+if a:
+    print(1)
+elif b:
+    print(1)
+'''
+
 
 class SplitOrConditional(RefactorOperator):
+
     def __init__(self, codebase):
         self.codebase = codebase
         self.targets = []
@@ -13,7 +28,7 @@ class SplitOrConditional(RefactorOperator):
     def apply(self, target):
         replacer = OrConditionalSplitter(target)
         replacer.walk(self.codebase)
-        return self.codebase
+        return self.codebase, replacer.applied
 
     def search_targets(self):
         candidates = list()
@@ -23,17 +38,25 @@ class SplitOrConditional(RefactorOperator):
             [target for target in searcher.targets])
         return candidates
 
+    # todo: test
+    @staticmethod
+    def is_applicable(node):
+        return isinstance(node.test, ast.BoolOp) and isinstance(node.test.op, ast.Or)
+
 
 class OrConditionalSplitter(astor.TreeWalk):
 
     def __init__(self, target):
         astor.TreeWalk.__init__(self)
         self.target = target
+        self.applied = False
 
     def pre_If(self):
-        if id(self.cur_node) == self.target:
-            parent_list = self.parent
+        if id(self.cur_node) == self.target \
+                and SplitOrConditional.is_applicable(self.cur_node):
+            self.applied = True
 
+            parent_list = self.parent
             if_stmt = self.cur_node
             cur_index = parent_list.index(if_stmt)
             and_left = if_stmt.test.values[0]
