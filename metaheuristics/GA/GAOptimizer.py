@@ -8,8 +8,10 @@ from deap import tools
 
 
 class GAOptimizer(FitnessOptimizer):
-    def __init__(self, possible_elements, fitness_func):
-        super().__init__(possible_elements, fitness_func)
+    def __init__(self, elements, fitness_func):
+        super().__init__(elements, fitness_func)
+
+        self.IDENTITY = 0
 
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
         creator.create("Individual", list, fitness=creator.FitnessMin)
@@ -29,12 +31,41 @@ class GAOptimizer(FitnessOptimizer):
 
         self.toolbox = toolbox
 
-    # add, remove, replace
+    # moves Identity elements to the right
+    # e.g. [0,1,0,2] -> [1,2,0,0]
+    def clean_up_individual(self, individual):
+        return sorted(individual, key=lambda x: 1 if x == self.IDENTITY else 0)
+
+    # todo: test mutation algorithm
     # expects cleaned representation
-    # mutation_rate: P[Mutation is Applied]
-    def mutate(self, individual, mutation_rate):
-        if random.random() < mutation_rate:
-            pass
+    def mutate(self, individual):
+        def add_mutation():
+            new_gene = random.sample(super.elements, 1)[0]
+            index = next(i for i, gene in enumerate(individual) if gene == self.IDENTITY)
+            if not 0 <= index < len(individual):
+                print("Error: add_mutation not possible")
+            else:
+                individual[index] = new_gene
+
+        def min_mutation():
+            index = next(i for i, gene in enumerate(individual) if gene == self.IDENTITY) - 1
+            if not 0 <= index < len(individual):
+                print("Error: min_mutation not possible")
+            else:
+                individual[index] = self.IDENTITY
+
+        def rep_mutation():
+            useful_genes = [x for x in individual if x != self.IDENTITY]
+            new_gene = random.sample(super.elements, 1)[0]
+            index = random.sample(range(len(useful_genes)), 1)[0]
+            if not 0 <= index < len(individual):
+                print("Error: rep_mutation not possible")
+            else:
+                individual[index] = new_gene
+
+        individual = self.clean_up_individual(individual)
+        mutation = random.sample([add_mutation, min_mutation, rep_mutation], 1)[0]
+        mutation()
         return individual
 
     def evaluate(self, individual):
@@ -42,6 +73,7 @@ class GAOptimizer(FitnessOptimizer):
         for index in individual:
             sequence.append(self.elements[index])
 
+        # a list of lists !?
         fit = self.fit([sequence])[0]
         return (float(fit),)
 
