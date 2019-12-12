@@ -31,6 +31,11 @@ class GAOptimizer(FitnessOptimizer):
 
         self.toolbox = toolbox
 
+    # moves Identity elements to the right
+    # e.g. [0,1,0,2] -> [1,2,0,0]
+    def clean_up_individual(self, individual):
+        return sorted(individual, key=lambda x: 1 if x == self.IDENTITY else 0)
+
     # todo: test mutation algorithm
     # expects cleaned representation
     def mutate(self, individual):
@@ -58,6 +63,7 @@ class GAOptimizer(FitnessOptimizer):
             else:
                 individual[index] = new_gene
 
+        individual = self.clean_up_individual(individual)
         mutation = random.sample([add_mutation, min_mutation, rep_mutation], 1)[0]
         mutation()
         return individual
