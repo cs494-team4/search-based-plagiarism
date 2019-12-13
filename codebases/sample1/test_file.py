@@ -1,10 +1,9 @@
-def abc():
-    print(0)
-    if a:
-        print(1)
-        return 1
-    print(3)
+test = [0, 1, 0, 2]
 
 
-a = True
-abc()
+def cleanup(liste):
+    sorted(liste, key=lambda x: 1 if x == 0 else 0)
+
+
+cleanup(test)
+print(test)

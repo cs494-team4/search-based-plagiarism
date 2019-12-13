@@ -1,6 +1,6 @@
 from fitness.RefactorFitness import RefactorFitness
+from metaheuristics.FitnessOptimizerFactory import FitnessOptimizerFactory
 
-# initialization
 fit = RefactorFitness(codebase='codebases/sample1/sample_original.py',
                       refactorer_engine='custom',
                       similarity_client='moss')
@@ -9,18 +9,18 @@ fit = RefactorFitness(codebase='codebases/sample1/sample_original.py',
 refactorings = fit.available_refactorings
 print('candidates: {}\n'.format(refactorings))
 
-refactoring_type = list(refactorings.keys())[0]
-target = refactorings[refactoring_type][0]
+possible_refactorings = list()
+for refactoring_type, targets in refactorings.items():
+    for target in targets:
+        possible_refactorings.append((refactoring_type, target))
+
+    break   # remove if a bug in conditional refactoring operator is fixed
+
+print(possible_refactorings)
+
+fitness_optimizer = FitnessOptimizerFactory.create(
+    "ga", possible_refactorings, fit)
 
 
-# repeated in the GA
-sequences = list()
-
-sequence = list()
-sequence.append((refactoring_type, target))
-
-sequences.append(sequence)
-
-fitness_value = fit(sequences)[0]
-
-print(fitness_value)
+result_sequence = fitness_optimizer.get_best_individual()
+print(result_sequence)

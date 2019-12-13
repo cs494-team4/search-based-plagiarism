@@ -10,4 +10,4 @@ class Dummy(Refactorer):
         return list()
 
     def apply(self, sequence, *args, **kwargs):
-        return self.codebase_repr
+        return self.codebase_repr, [True for _ in sequence]

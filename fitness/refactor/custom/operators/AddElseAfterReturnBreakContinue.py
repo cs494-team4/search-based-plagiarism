@@ -1,7 +1,22 @@
 import astor
 import ast
-
 from .RefactorOperator import RefactorOperator
+
+'''
+a = True
+for elem in range(5):
+    if a:
+        continue
+    print(1)
+        
+
+-->
+for elem in range(5):
+    if a:
+        break
+    else:
+        print(1)
+'''
 
 
 class AddElseAfterReturnBreakContinue(RefactorOperator):
@@ -13,7 +28,7 @@ class AddElseAfterReturnBreakContinue(RefactorOperator):
     def apply(self, target):
         replacer = OrConditionalSplitter(target)
         replacer.walk(self.codebase)
-        return self.codebase
+        return self.codebase, replacer.applied
 
     def search_targets(self):
         candidates = list()
@@ -23,15 +38,25 @@ class AddElseAfterReturnBreakContinue(RefactorOperator):
             [target for target in searcher.targets])
         return candidates
 
+    @staticmethod
+    def is_applicable(node):
+        return (isinstance(node.body[-1], ast.Return)
+                or isinstance(node.body[-1], ast.Break)
+                or isinstance(node.body[-1], ast.Continue)) \
+               and len(node.orelse) < 1
+
 
 class OrConditionalSplitter(astor.TreeWalk):
 
     def __init__(self, target):
         astor.TreeWalk.__init__(self)
         self.target = target
+        self.applied = False
 
     def pre_If(self):
-        if id(self.cur_node) == self.target:
+        if id(self.cur_node) == self.target \
+                and AddElseAfterReturnBreakContinue.is_applicable(self.cur_node):
+            self.applied = True
             curr_node = self.cur_node
             cur_index = self.parent.index(curr_node)
             parents = self.parent

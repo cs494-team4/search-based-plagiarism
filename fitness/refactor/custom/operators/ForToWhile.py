@@ -1,43 +1,48 @@
-import abc
 import ast
 import astor
 
-from utils import print_node
 from .RefactorOperator import RefactorOperator
 
 
 class ForToWhile(RefactorOperator):
 
-    __metaclass__ = abc.ABCMeta
+    def __init__(self, codebase):
+        self.codebase = codebase
+        self.targets = []
 
-    @abc.abstractmethod
     def apply(self, target):
-        replacer = ReplaceForToWhile()
-        replacer.set_target(target)
+        replacer = ReplaceForToWhile(target)
+        #replacer.set_target(target)
         replacer.walk(self.codebase)
-        return self.codebase
+        return self.codebase, replacer.applied
 
-    @abc.abstractmethod
     def search_targets(self):
         candidates = list()
         searcher = SearchRefactorablesForLoop()
         searcher.walk(self.codebase)
         candidates.extend(
             [target for target in searcher.targets])
-
         return candidates
+
+    @staticmethod
+    def is_applicable(node):
+        return True
 
 
 class ReplaceForToWhile(astor.TreeWalk):
-    def set_target(self, target):
+
+    def __init__(self, target):
+        astor.TreeWalk.__init__(self)
         self.target = target
+        self.applied = False
 
     def pre_For(self):
-        if id(self.cur_node) == self.target:
-            print("*** Refactor For => While: Node {}".format(self.target))
-            # before
-            print("[Before Refactoring]")
-            print(astor.to_source(self.cur_node))
+        if id(self.cur_node) == self.target \
+                and ForToWhile.is_applicable(self.cur_node):
+
+            # print("*** Refactor For => While: Node {}".format(self.target))
+            # print("[Before Refactoring]")
+            # print(astor.to_source(self.cur_node))
 
             _target = astor.to_source(self.cur_node.target).strip()
             _iter = astor.to_source(self.cur_node.iter).strip()
@@ -52,18 +57,16 @@ class ReplaceForToWhile(astor.TreeWalk):
             while_stmt.body = body
             while_stmt.orelse = self.cur_node.orelse
 
-            print_node(module_stmt)
             self.replace(module_stmt)
 
-            # after
-            print("[After Refactoring]")
-            print_node(module_stmt)
+            # print("[After Refactoring]")
+            # print_node(module_stmt)
 
 
 class SearchRefactorablesForLoop(astor.TreeWalk):
     def __init__(self):
         astor.TreeWalk.__init__(self)
-        self.targets = []   # save parent nodes
+        self.targets = []  # save parent nodes
 
     def pre_For(self):
         self.targets.append(id(self.cur_node))
