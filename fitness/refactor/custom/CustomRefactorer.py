@@ -8,6 +8,7 @@ from .operators.SplitAndConditional import SplitAndConditional
 from .operators.MergeNestedIfStatement import MergeNestedIfStatement
 from .operators.SplitOrConditional import SplitOrConditional
 from .operators.AddElseAfterReturnBreakContinue import AddElseAfterReturnBreakContinue
+from .operators.StaticToInstance import StaticToInstance
 from .operators.PowToOperator import PowToOperator
 from .operators.OperatorToPow import OperatorToPow
 from .operators.FormatToStringConcat import FormatToStringConcat
@@ -24,6 +25,7 @@ _operation_classes = {
     "MergeNestedIfStatement": MergeNestedIfStatement,
     "SplitOrConditional": SplitOrConditional,
     "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
+    "StaticToInstance": StaticToInstance,
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
     "FormatToStringConcat": FormatToStringConcat
