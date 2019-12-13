@@ -4,6 +4,11 @@ import copy
 from utils import print_node
 from .RefactorOperator import RefactorOperator
 
+'''
+    DISMISSED 
+    because it is to complicated for now :/
+'''
+
 
 class ExpandFunction(RefactorOperator):
 
@@ -24,9 +29,11 @@ class ExpandFunction(RefactorOperator):
             [target for target in searcher.targets])
         return candidates
 
+    # todo: rethink is_applicable
     @staticmethod
     def is_applicable(node):
-        return False
+        return True
+
 
 
 class FunctionExpander(astor.TreeWalk):

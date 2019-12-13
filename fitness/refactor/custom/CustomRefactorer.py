@@ -12,13 +12,16 @@ from .operators.PowToOperator import PowToOperator
 from .operators.OperatorToPow import OperatorToPow
 from .operators.FormatToStringConcat import FormatToStringConcat
 from .operators.Identity import Identity
+from .operators.ChangeOrderOfParameters import ChangeOrderOfParameters
+from .operators.FillInDefaultArguments import FillInDefaultArguments
 
 # [In Progress] custom refactorer
 # method-level refactoring operators
 
 
 _operation_classes = {
-    "Identity": Identity,
+    "Identity": Identity,  # needs to be first !!!
+
     "ForToWhile": ForToWhile,
     "SplitAndConditional": SplitAndConditional,
     "MergeNestedIfStatement": MergeNestedIfStatement,
@@ -26,7 +29,9 @@ _operation_classes = {
     "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
-    "FormatToStringConcat": FormatToStringConcat
+    "FormatToStringConcat": FormatToStringConcat,
+    "ChangeOrderOfParameters": ChangeOrderOfParameters,
+    "FillInDefaultArguments": FillInDefaultArguments
 }
 
 refactored_files_path = 'temp/'
@@ -70,7 +75,7 @@ class CustomRefactorer(Refactorer):
 
         filename = '{}{}.py'.format(refactored_files_path, id(codebase))
         with open(filename, 'w') as f:
-            print(astor.dump_tree(codebase))
+            # print(astor.dump_tree(codebase))
             f.write(astor.to_source(codebase))
 
         return filename, success_indicies
