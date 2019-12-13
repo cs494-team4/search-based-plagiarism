@@ -24,8 +24,10 @@ class GAOptimizer(FitnessOptimizer):
         toolbox.register("population", tools.initRepeat,
                          list, toolbox.individual)
 
-        toolbox.register("mate", tools.cxTwoPoint)
-        toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.1)
+        # toolbox.register("mate", tools.cxUniform, indpb=0.5)
+        # toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.1)
+        toolbox.register("mate", self.mate)
+        toolbox.register("mutate", self.mutate)
         toolbox.register("select", tools.selTournament, tournsize=3)
         toolbox.register("evaluate", self.evaluate)
 
@@ -35,6 +37,18 @@ class GAOptimizer(FitnessOptimizer):
     # e.g. [0,1,0,2] -> [1,2,0,0]
     def clean_up_individual(self, individual):
         return sorted(individual, key=lambda x: 1 if x == self.IDENTITY else 0)
+
+    def mate(self, individual1, individual2, indpb):
+        if (len(individual1) == len(individual2)):
+            for index in range(len(individual1)):
+                if random.random() < indpb:
+                    individual1[index], individual2[index] \
+                        = individual2[index], individual1[index]
+            individual1 = self.clean_up_individual(individual1)
+            individual2 = self.clean_up_individual(individual2)
+        else:
+            print("Error: Two individuals have different length")
+        return individual1, individual2
 
     # todo: test mutation algorithm
     # expects cleaned representation
@@ -114,7 +128,7 @@ class GAOptimizer(FitnessOptimizer):
             # Apply crossover and mutation on the offspring
             for child1, child2 in zip(offspring[::2], offspring[1::2]):
                 if random.random() < CXPB:
-                    toolbox.mate(child1, child2)
+                    toolbox.mate(child1, child2, 0.5)   # TODO: scale INDPB
                     del child1.fitness.values
                     del child2.fitness.values
 
