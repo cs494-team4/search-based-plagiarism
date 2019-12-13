@@ -13,7 +13,7 @@ class StaticToInstance(RefactorOperator):
         self.targets = []
 
     def apply(self, target):
-        replacer = ChangeStaticToInstance(target)   # TODO: Need TARGET param or not?
+        replacer = ChangeStaticToInstance(target)
         replacer.walk(self.codebase)
         return self.codebase
 
@@ -45,7 +45,7 @@ class ChangeStaticToInstance(astor.TreeWalk):
 class SearchRefactorableStatic(astor.TreeWalk):
     def __init__(self):
         astor.TreeWalk.__init__(self)
-        self.targets = []   # save parent nodes
+        self.targets = []   # save refactorable functions
 
     def pre_ClassDef(self):
         class_stmt = self.cur_node
@@ -59,7 +59,7 @@ class SearchRefactorableStatic(astor.TreeWalk):
                 if (isinstance(decorator, ast.Name)
                     and decorator.id == 'staticmethod'):
                     # It's a static function
-                    self.targets.append(id(body_item))  # TODO: append body_item or class_stmt?
+                    self.targets.append(id(body_item))
 
 
             
