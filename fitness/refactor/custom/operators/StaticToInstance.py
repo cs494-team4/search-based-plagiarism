@@ -15,7 +15,7 @@ class StaticToInstance(RefactorOperator):
     def apply(self, target):
         replacer = ChangeStaticToInstance(target)
         replacer.walk(self.codebase)
-        return self.codebase
+        return self.codebase, replacer.applied
 
     def search_targets(self):
         candidates = list()
@@ -24,15 +24,22 @@ class StaticToInstance(RefactorOperator):
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
+    
+    @staticmethod
+    def is_applicable(node):
+        return any(isinstance(node, ast.FunctionDef) for node in node.body)
 
 class ChangeStaticToInstance(astor.TreeWalk):
     def __init__(self, target):
         astor.TreeWalk.__init__(self)
         self.target = target
+        self.applied = False
     
     # TODO: change Class.static_method() usage as self.instance_method() usage also, if any
     def pre_FunctionDef(self):  # TODO: check FunctionDef or ClassDef?
-        if id(self.cur_node) == self.target:
+        if id(self.cur_node) == self.target \
+            and StaticToInstance.is_applicable(self.cur_node):
+            self.applied = True
             curr_node = self.cur_node
             # insert keyword SELF in FunctionDef
             curr_node.args.args.insert(0, ast.arg(arg='self', annotation=None))
