@@ -42,8 +42,8 @@ class Renamer(astor.TreeWalk):
         if id(self.cur_node) == self.target and Rename.is_applicable(self.cur_node):
             # random_string = randomString(4);
             new_name = "new_" + self.cur_node.id
-            new_id = ast.Name(id = new_name, ctx = self.cur_node.ctx)
-            self.replace(new_id)
+            new_node = ast.Name(id = new_name, ctx = self.cur_node.ctx)
+            self.replace(new_node)
             self.applied = True
 
 
@@ -57,7 +57,13 @@ class SearchVar(astor.TreeWalk):
             self.targets.append(id(self.cur_node))
             # self.targets.append(self.cur_node.id)
 
+    def pre_ClassDef(self):
+        if Rename.is_applicable(self.cur_node.name):
+            self.targets.append(id(self.cur_node.name))
 
+    def pre_FunctionDef(self):
+        if Rename.is_applicable(self.cur_node.name):
+            self.targets.append(id(self.cur_node.name))
 
 # # Generate a random string of fixed length
 # def randomString(stringLength):
