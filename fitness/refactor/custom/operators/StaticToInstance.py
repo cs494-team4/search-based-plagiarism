@@ -27,7 +27,7 @@ class StaticToInstance(RefactorOperator):
     
     @staticmethod
     def is_applicable(node):
-        return any(isinstance(node, ast.FunctionDef) for node in node.body)
+        return True
 
 class ChangeStaticToInstance(astor.TreeWalk):
     def __init__(self, target):

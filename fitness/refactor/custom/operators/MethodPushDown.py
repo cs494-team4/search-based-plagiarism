@@ -15,7 +15,7 @@ class MethodPushDown(RefactorOperator):
     def apply(self, target):
         replacer = PushMethodDownToChild(target, self.pushable_methods)
         replacer.walk(self.codebase)
-        return self.codebase
+        return self.codebase, replacer.applied
 
     def search_targets(self):
         candidates = list()
@@ -25,15 +25,22 @@ class MethodPushDown(RefactorOperator):
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
+    
+    @staticmethod
+    def is_applicable(node):
+        return True
 
 class PushMethodDownToChild(astor.TreeWalk):
     def __init__(self, target, pushable_methods):
         astor.TreeWalk.__init__(self)
         self.target = target
         self.pushable_methods = pushable_methods
+        self.applied = False
     
     def pre_ClassDef(self):
-        if id(self.cur_node) == self.target:
+        if id(self.cur_node) == self.target \
+            and MethodPushDown.is_applicable(self.cur_node):
+            self.applied = True
             child_node = self.cur_node
             ftn = self.pushable_methods[id(child_node)]
             # Check if the child class can have the method pushed down
