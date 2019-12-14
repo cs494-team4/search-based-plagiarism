@@ -1,7 +1,7 @@
 # Search Based Software Plagiarism
 
 ## Adding new refactorers
--FortoWhile
+-FortoWhile\
 -SplitAndConditional
 -MergeNestedIfStatement
 -SplitOrConditional
