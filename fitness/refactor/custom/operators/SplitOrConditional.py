@@ -62,9 +62,10 @@ class OrConditionalSplitter(astor.TreeWalk):
             and_right = if_stmt.test.values[1]
             body_list = if_stmt.body
             orelse_list = if_stmt.orelse
-            new_if = ast.If(and_left, body_list, [ast.If(and_right, body_list, [])])
-            u.print_node(and_left)
-            u.print_node(and_right)
+            new_if = ast.If(and_left, body_list, [
+                            ast.If(and_right, body_list, [])])
+            # u.print_node(and_left)
+            # u.print_node(and_right)
 
             self.replace(new_if)
 
