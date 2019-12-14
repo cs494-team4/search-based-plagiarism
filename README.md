@@ -1,21 +1,21 @@
 # Search Based Software Plagiarism
 
 ## Adding new refactorers
-*FortoWhile
-*SplitAndConditional
-*MergeNestedIfStatement
-*SplitOrConditional
-*AddElseAfterReturnBreakContinue
-*StaticToInstance
-*MethodPushDown
-*PowToOperator
-*OperatorToPow
-*FormatToStringConcat
-*Rename
+-FortoWhile
+-SplitAndConditional
+-MergeNestedIfStatement
+-SplitOrConditional
+-AddElseAfterReturnBreakContinue
+-StaticToInstance
+-MethodPushDown
+-PowToOperator
+-OperatorToPow
+-FormatToStringConcat
+-Rename
 
 
 ## Adding new software similarity measurements
-We are cuurrently using MOSS(https://theory.stanford.edu/~aiken/moss/).
+We are currently using MOSS(https://theory.stanford.edu/~aiken/moss/).
 
 
 ## CustomRefactorer
