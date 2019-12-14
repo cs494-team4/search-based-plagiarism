@@ -11,7 +11,7 @@
 -PowToOperator\
 -OperatorToPow\
 -FormatToStringConcat\
--Rename\
+-Rename
 
 
 ## Adding new software similarity measurements
