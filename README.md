@@ -2,16 +2,16 @@
 
 ## Adding new refactorers
 -FortoWhile\
--SplitAndConditional
--MergeNestedIfStatement
--SplitOrConditional
--AddElseAfterReturnBreakContinue
--StaticToInstance
--MethodPushDown
--PowToOperator
--OperatorToPow
--FormatToStringConcat
--Rename
+-SplitAndConditional\
+-MergeNestedIfStatement\
+-SplitOrConditional\
+-AddElseAfterReturnBreakContinue\
+-StaticToInstance\
+-MethodPushDown\
+-PowToOperator\
+-OperatorToPow\
+-FormatToStringConcat\
+-Rename\
 
 
 ## Adding new software similarity measurements
