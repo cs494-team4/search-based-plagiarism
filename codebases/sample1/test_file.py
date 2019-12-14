@@ -1,9 +1,7 @@
-test = [0, 1, 0, 2]
+def add_test(a=1, b=2, c=3):
+    return a + b + c
 
 
-def cleanup(liste):
-    sorted(liste, key=lambda x: 1 if x == 0 else 0)
-
-
-cleanup(test)
-print(test)
+x = 1
+y = 2
+add_test(b=2, c=3)

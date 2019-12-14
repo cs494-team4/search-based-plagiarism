@@ -21,18 +21,17 @@ from .operators.Rename import Rename
 
 
 _operation_classes = {
-    "Identity": Identity,
     "ForToWhile": ForToWhile,
     "SplitAndConditional": SplitAndConditional,
     "MergeNestedIfStatement": MergeNestedIfStatement,
     "SplitOrConditional": SplitOrConditional,
-    "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
+    # "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
     "StaticToInstance": StaticToInstance,
     "MethodPushDown": MethodPushDown,
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
-    "FormatToStringConcat": FormatToStringConcat,
-    "Rename:: Rename
+    # "FormatToStringConcat": FormatToStringConcat,
+    # "Rename": Rename,
 }
 
 refactored_files_path = 'temp/'
@@ -76,7 +75,7 @@ class CustomRefactorer(Refactorer):
 
         filename = '{}{}.py'.format(refactored_files_path, id(codebase))
         with open(filename, 'w') as f:
-            print(astor.dump_tree(codebase))
+            # print(astor.dump_tree(codebase))
             f.write(astor.to_source(codebase))
 
         return filename, success_indicies

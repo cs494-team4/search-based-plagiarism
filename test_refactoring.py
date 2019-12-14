@@ -9,7 +9,7 @@ The edited file will be stored in temp/
 file_path = "codebases/sample1/test_file.py"
 
 # Class name of the refactoring you want to test
-refactoring_type = "Identity"
+refactoring_type = "FillInDefaultArguments"
 
 # Index of target you want to apply the refactoring to
 # -1 if you just want a display of the targets (to check if there are any)

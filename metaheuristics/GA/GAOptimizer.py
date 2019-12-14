@@ -2,25 +2,38 @@ from metaheuristics.FitnessOptimizer import FitnessOptimizer
 
 import random
 
+from utils import OrderedSet
+
 from deap import base
 from deap import creator
 from deap import tools
+
+
+def pick_index_biased(elements_map):
+    r_types = elements_map.keys()
+
+    type_index = random.randrange(len(r_types))
+    r_type = list(r_types)[type_index]
+    target_index = random.randrange(len(elements_map[r_type]))
+
+    return elements_map[r_type][target_index][1]
 
 
 class GAOptimizer(FitnessOptimizer):
     def __init__(self, elements, fitness_func):
         super().__init__(elements, fitness_func)
 
-        self.IDENTITY = 0
+        self.ADD_MUTATION_COUNT = 5
+        self.SUB_MUTATION_COUNT = 5
+        self.CH_MUTATION_COUNT = 5
 
-        creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-        creator.create("Individual", list, fitness=creator.FitnessMin)
+        creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
+        creator.create("Individual", OrderedSet, fitness=creator.FitnessMin)
         toolbox = base.Toolbox()
-        toolbox.register("indices", random.sample,
-                         range(len(self.elements)), self.sequence_length)
+        toolbox.register("attr_item", pick_index_biased, self.elements_map)
 
-        toolbox.register("individual", tools.initIterate,
-                         creator.Individual, toolbox.indices)
+        toolbox.register("individual", tools.initRepeat,
+                         creator.Individual, toolbox.attr_item, self.sequence_length)
         toolbox.register("population", tools.initRepeat,
                          list, toolbox.individual)
 
@@ -28,68 +41,11 @@ class GAOptimizer(FitnessOptimizer):
         # toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.1)
         toolbox.register("mate", self.mate)
         toolbox.register("mutate", self.mutate)
-        toolbox.register("select", tools.selTournament, tournsize=3)
+        toolbox.register("select", tools.selNSGA2)
         toolbox.register("evaluate", self.evaluate)
 
         self.toolbox = toolbox
-
-    # moves Identity elements to the right
-    # e.g. [0,1,0,2] -> [1,2,0,0]
-    def clean_up_individual(self, individual):
-        return sorted(individual, key=lambda x: 1 if x == self.IDENTITY else 0)
-
-    def mate(self, individual1, individual2, indpb):
-        if (len(individual1) == len(individual2)):
-            for index in range(len(individual1)):
-                if random.random() < indpb:
-                    individual1[index], individual2[index] \
-                        = individual2[index], individual1[index]
-            individual1 = self.clean_up_individual(individual1)
-            individual2 = self.clean_up_individual(individual2)
-        else:
-            print("Error: Two individuals have different length")
-        return individual1, individual2
-
-    # todo: test mutation algorithm
-    # expects cleaned representation
-    def mutate(self, individual):
-        def add_mutation():
-            new_gene = random.sample(super.elements, 1)[0]
-            index = next(i for i, gene in enumerate(individual) if gene == self.IDENTITY)
-            if not 0 <= index < len(individual):
-                print("Error: add_mutation not possible")
-            else:
-                individual[index] = new_gene
-
-        def min_mutation():
-            index = next(i for i, gene in enumerate(individual) if gene == self.IDENTITY) - 1
-            if not 0 <= index < len(individual):
-                print("Error: min_mutation not possible")
-            else:
-                individual[index] = self.IDENTITY
-
-        def rep_mutation():
-            useful_genes = [x for x in individual if x != self.IDENTITY]
-            new_gene = random.sample(super.elements, 1)[0]
-            index = random.sample(range(len(useful_genes)), 1)[0]
-            if not 0 <= index < len(individual):
-                print("Error: rep_mutation not possible")
-            else:
-                individual[index] = new_gene
-
-        individual = self.clean_up_individual(individual)
-        mutation = random.sample([add_mutation, min_mutation, rep_mutation], 1)[0]
-        mutation()
-        return individual
-
-    def evaluate(self, individual):
-        sequence = []
-        for index in individual:
-            sequence.append(self.elements[index])
-
-        # a list of lists !?
-        fit = self.fit([sequence])[0]
-        return (float(fit),)
+        self.creator = creator
 
     def get_best_individual(self):
         pop = self.evolve_population()
@@ -106,10 +62,70 @@ class GAOptimizer(FitnessOptimizer):
         print('best fitness: {}'.format(best_fit))
         return [self.elements[index] for index in best_ind]
 
-    def evolve_population(self, n=3, CXPB=0.5, MUTPB=0.2, NGEN=5):
+    # moves Identity elements to the right
+    # e.g. [0,1,0,2] -> [1,2,0,0]
+    def clean_up_individual(self, individual):
+        return sorted(individual, key=lambda x: 1 if x == self.IDENTITY else 0)
+
+    def mate(self, individual1, individual2, indpb):
+        length = min(len(individual1), len(individual2))
+        ind1 = list(individual1)
+        ind2 = list(individual2)
+        for index in range(length):
+            if random.random() < indpb:
+                ind1[index], ind2[index] \
+                    = ind2[index], ind1[index]
+
+        return self.creator.Individual(ind1), self.creator.Individual(ind2)
+
+    # todo: test mutation algorithm
+    def mutate(self, individual):
+        def add_mutation():
+            old_len = len(individual)
+            while len(individual) < old_len + self.ADD_MUTATION_COUNT \
+                    and len(individual) < len(self.elements):
+                new_gene = random.sample(range(len(self.elements)), 1)[0]
+                individual.add(new_gene)
+            return individual
+
+        def rm_mutation():
+            old_len = len(individual)
+            while len(individual) > old_len - self.SUB_MUTATION_COUNT \
+                    and len(individual) > 1:
+                rm_gene = random.sample(individual, 1)[0]
+                individual.discard(rm_gene)
+                return individual
+
+        def ch_mutation():
+            for i in range(self.CH_MUTATION_COUNT):
+                individual_list = list(individual)
+                ch_index = random.sample(range(len(individual_list)), 1)[0]
+                ch_gene = random.sample(range(len(self.elements)), 1)[0]
+                individual_list[ch_index] = ch_gene
+            return self.creator.Individual(individual_list)
+
+        mutations = [add_mutation, rm_mutation, ch_mutation]
+        mutation = random.sample(mutations, 1)[0]
+
+        print(str(mutation))
+        return mutation()
+
+    def evaluate(self, individual):
+        sequence = []
+        for index in individual:
+            sequence.append(self.elements[index])
+
+        # a list of lists !?
+        fit = self.fit([sequence])[0][0]
+        # TODO: check is_applicable | self.fit([sequence])[0][1][0]
+        return (float(fit), len(individual))
+
+    def evolve_population(self, n=10, CXPB=0.5, MUTPB=0.2, NGEN=5):
         toolbox = self.toolbox
 
         pop = toolbox.population(n)
+        print(pop)
+
         fitnesses = map(toolbox.evaluate, pop)
 
         for ind, fit in zip(pop, fitnesses):
@@ -118,7 +134,14 @@ class GAOptimizer(FitnessOptimizer):
         for g in range(NGEN):
             average_fitness = sum(
                 map(lambda x: self.toolbox.evaluate(x)[0], pop)) / len(pop)
-            print('{}th generation: {}'.format(g, average_fitness))
+            if (str(g)[-1] == '0'):
+                print('{}st generation: {}'.format(g+1, average_fitness))
+            elif (str(g)[-1] == '1'):
+                print('{}nd generation: {}'.format(g+1, average_fitness))
+            elif (str(g)[-1] == '2'):
+                print('{}rd generation: {}'.format(g+1, average_fitness))
+            else:
+                print('{}th generation: {}'.format(g+1, average_fitness))
 
             # Select the next generation individuals
             offspring = toolbox.select(pop, len(pop))
@@ -128,14 +151,16 @@ class GAOptimizer(FitnessOptimizer):
             # Apply crossover and mutation on the offspring
             for child1, child2 in zip(offspring[::2], offspring[1::2]):
                 if random.random() < CXPB:
-                    toolbox.mate(child1, child2, 0.5)   # TODO: scale INDPB
+                    toolbox.mate(child1, child2, 0.5)  # TODO: scale INDPB
                     del child1.fitness.values
                     del child2.fitness.values
 
+            new_offspring = list()
             for mutant in offspring:
                 if random.random() < MUTPB:
-                    toolbox.mutate(mutant)
+                    mutant = toolbox.mutate(mutant)
                     del mutant.fitness.values
+                new_offspring.append(mutant)
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -145,5 +170,6 @@ class GAOptimizer(FitnessOptimizer):
 
             # The population is entirely replaced by the offspring
             pop[:] = offspring
+            print(pop)
 
         return pop
