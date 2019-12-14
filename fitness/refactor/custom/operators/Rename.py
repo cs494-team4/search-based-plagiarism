@@ -2,7 +2,8 @@ import astor
 import ast
 import random
 import string
-from RefactorOperator import RefactorOperator
+
+from .RefactorOperator import RefactorOperator
 
 # rename variable, class, function name
 
@@ -17,7 +18,6 @@ class Rename(RefactorOperator):
         replacer.walk(self.codebase)
         return self.codebase, replacer.applied
 
-
     def search_targets(self):
         candidates = list()
         searcher = SearchVar()
@@ -28,8 +28,8 @@ class Rename(RefactorOperator):
 
     @staticmethod
     def is_applicable(node):
-        return isinstance(node, ast.Name) and node.id not in dir(__builtins__)#print() is a function identifier but should not be selected as a candidate
-
+        # print() is a function identifier but should not be selected as a candidate
+        return isinstance(node, ast.Name) and node.id not in dir(__builtins__)
 
 
 class Renamer(astor.TreeWalk):
@@ -42,7 +42,7 @@ class Renamer(astor.TreeWalk):
         if id(self.cur_node) == self.target and Rename.is_applicable(self.cur_node):
             # random_string = randomString(4);
             new_name = "new_" + self.cur_node.id
-            new_node = ast.Name(id = new_name, ctx = self.cur_node.ctx)
+            new_node = ast.Name(id=new_name, ctx=self.cur_node.ctx)
             self.replace(new_node)
             self.applied = True
 
