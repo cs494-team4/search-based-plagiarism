@@ -46,14 +46,16 @@ class FunctionExpander(astor.TreeWalk):
             print(f'parent:{ast.dump(parent)}')
 
             fun_name = node.func.id
-            fun_def = [func for func in self.definitions if func.name == fun_name][0]
+            fun_def = [
+                func for func in self.definitions if func.name == fun_name][0]
             fun_body = fun_def.body
             fun_body_copy = copy.deepcopy(fun_body)
 
             fun_arg_names = [x.arg for x in fun_def.args.args]
             cal_arg_names = [x.id for x in node.args]
 
-            var_replacement_dic = {fun_args: call_args for fun_args, call_args in zip(fun_arg_names, cal_arg_names)}
+            var_replacement_dic = {fun_args: call_args for fun_args, call_args in zip(
+                fun_arg_names, cal_arg_names)}
             replacer = VariableReplacer(var_replacement_dic)
             replacer.walk(fun_body_copy)
 
@@ -86,7 +88,7 @@ class SearchExpandableFunction(astor.TreeWalk):
     def pre_Call(self):
         parent = self.parent
         node = self.cur_node
-        print_node(node)
+        # print_node(node)
         if node.func.id in self.definitions \
                 and isinstance(parent, ast.Expr):
             self.targets.append(id(self.cur_node))

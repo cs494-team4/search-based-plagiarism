@@ -1,7 +1,7 @@
 from fitness.RefactorFitness import RefactorFitness
 from metaheuristics.FitnessOptimizerFactory import FitnessOptimizerFactory
 
-fit = RefactorFitness(codebase='codebases/sample1/sample_original.py',
+fit = RefactorFitness(codebase='samples/sample_original.py',
                       refactorer_engine='custom',
                       similarity_client='moss')
 
