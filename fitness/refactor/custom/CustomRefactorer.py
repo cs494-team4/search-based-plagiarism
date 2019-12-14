@@ -8,10 +8,13 @@ from .operators.SplitAndConditional import SplitAndConditional
 from .operators.MergeNestedIfStatement import MergeNestedIfStatement
 from .operators.SplitOrConditional import SplitOrConditional
 from .operators.AddElseAfterReturnBreakContinue import AddElseAfterReturnBreakContinue
+from .operators.StaticToInstance import StaticToInstance
+from .operators.MethodPushDown import MethodPushDown
 from .operators.PowToOperator import PowToOperator
 from .operators.OperatorToPow import OperatorToPow
 from .operators.FormatToStringConcat import FormatToStringConcat
 from .operators.Identity import Identity
+from .operators.Rename import Rename
 
 # [In Progress] custom refactorer
 # method-level refactoring operators
@@ -24,9 +27,12 @@ _operation_classes = {
     "MergeNestedIfStatement": MergeNestedIfStatement,
     "SplitOrConditional": SplitOrConditional,
     "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
+    "StaticToInstance": StaticToInstance,
+    "MethodPushDown": MethodPushDown,
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
-    "FormatToStringConcat": FormatToStringConcat
+    "FormatToStringConcat": FormatToStringConcat,
+    "Rename:: Rename
 }
 
 refactored_files_path = 'temp/'
