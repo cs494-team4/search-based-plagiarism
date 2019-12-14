@@ -25,13 +25,13 @@ _operation_classes = {
     "SplitAndConditional": SplitAndConditional,
     "MergeNestedIfStatement": MergeNestedIfStatement,
     "SplitOrConditional": SplitOrConditional,
-    "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
+    # "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
     "StaticToInstance": StaticToInstance,
     "MethodPushDown": MethodPushDown,
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
-    "FormatToStringConcat": FormatToStringConcat,
-    "Rename": Rename,
+    # "FormatToStringConcat": FormatToStringConcat,
+    # "Rename": Rename,
 }
 
 refactored_files_path = 'temp/'

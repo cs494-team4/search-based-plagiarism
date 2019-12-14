@@ -9,6 +9,16 @@ from deap import creator
 from deap import tools
 
 
+def pick_index_biased(elements_map):
+    r_types = elements_map.keys()
+
+    type_index = random.randrange(len(r_types))
+    r_type = list(r_types)[type_index]
+    target_index = random.randrange(len(elements_map[r_type]))
+
+    return elements_map[r_type][target_index][1]
+
+
 class GAOptimizer(FitnessOptimizer):
     def __init__(self, elements, fitness_func):
         super().__init__(elements, fitness_func)
@@ -20,8 +30,7 @@ class GAOptimizer(FitnessOptimizer):
         creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
         creator.create("Individual", OrderedSet, fitness=creator.FitnessMin)
         toolbox = base.Toolbox()
-        toolbox.register("attr_item", random.randrange,
-                         len(self.elements))
+        toolbox.register("attr_item", pick_index_biased, self.elements_map)
 
         toolbox.register("individual", tools.initRepeat,
                          creator.Individual, toolbox.attr_item, self.sequence_length)
@@ -111,7 +120,7 @@ class GAOptimizer(FitnessOptimizer):
         # TODO: check is_applicable | self.fit([sequence])[0][1][0]
         return (float(fit), len(individual))
 
-    def evolve_population(self, n=3, CXPB=0.5, MUTPB=0.2, NGEN=5):
+    def evolve_population(self, n=10, CXPB=0.5, MUTPB=0.2, NGEN=5):
         toolbox = self.toolbox
 
         pop = toolbox.population(n)
@@ -125,7 +134,14 @@ class GAOptimizer(FitnessOptimizer):
         for g in range(NGEN):
             average_fitness = sum(
                 map(lambda x: self.toolbox.evaluate(x)[0], pop)) / len(pop)
-            print('{}th generation: {}'.format(g, average_fitness))
+            if (str(g)[-1] == '0'):
+                print('{}st generation: {}'.format(g+1, average_fitness))
+            elif (str(g)[-1] == '1'):
+                print('{}nd generation: {}'.format(g+1, average_fitness))
+            elif (str(g)[-1] == '2'):
+                print('{}rd generation: {}'.format(g+1, average_fitness))
+            else:
+                print('{}th generation: {}'.format(g+1, average_fitness))
 
             # Select the next generation individuals
             offspring = toolbox.select(pop, len(pop))
@@ -154,5 +170,6 @@ class GAOptimizer(FitnessOptimizer):
 
             # The population is entirely replaced by the offspring
             pop[:] = offspring
+            print(pop)
 
         return pop
