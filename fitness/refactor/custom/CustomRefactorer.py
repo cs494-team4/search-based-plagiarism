@@ -8,9 +8,13 @@ from .operators.SplitAndConditional import SplitAndConditional
 from .operators.MergeNestedIfStatement import MergeNestedIfStatement
 from .operators.SplitOrConditional import SplitOrConditional
 from .operators.AddElseAfterReturnBreakContinue import AddElseAfterReturnBreakContinue
+from .operators.StaticToInstance import StaticToInstance
+from .operators.MethodPushDown import MethodPushDown
 from .operators.PowToOperator import PowToOperator
 from .operators.OperatorToPow import OperatorToPow
 from .operators.FormatToStringConcat import FormatToStringConcat
+from .operators.Identity import Identity
+from .operators.Rename import Rename
 from .operators.ExprToNaryFunc import ExprToNaryFunc
 
 # [In Progress] custom refactorer
@@ -22,9 +26,12 @@ _operation_classes = {
     "SplitAndConditional": SplitAndConditional,
     "MergeNestedIfStatement": MergeNestedIfStatement,
     "SplitOrConditional": SplitOrConditional,
-    "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
+    # "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
+    "StaticToInstance": StaticToInstance,
+    "MethodPushDown": MethodPushDown,
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
+    # "Rename": Rename,
     "FormatToStringConcat": FormatToStringConcat,
     "ExprToNaryFunc": ExprToNaryFunc
 
@@ -71,8 +78,7 @@ class CustomRefactorer(Refactorer):
 
         filename = '{}{}.py'.format(refactored_files_path, id(codebase))
         with open(filename, 'w') as f:
-
-            print(astor.dump_tree(codebase))
+            # print(astor.dump_tree(codebase))
             f.write(astor.to_source(codebase))
 
         return filename, success_indicies

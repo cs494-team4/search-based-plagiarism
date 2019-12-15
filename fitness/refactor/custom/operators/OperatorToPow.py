@@ -1,7 +1,6 @@
 import astor
 import ast
 
-from utils import print_node
 from .RefactorOperator import RefactorOperator
 
 

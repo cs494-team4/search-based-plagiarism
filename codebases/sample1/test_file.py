@@ -1,10 +1,7 @@
-def abc():
-    print(0)
-    if a:
-        print(1)
-        return 1
-    print(3)
+def add_test(a=1, b=2, c=3):
+    return a + b + c
 
 
-a = True
-abc()
+x = 1
+y = 2
+add_test(b=2, c=3)
