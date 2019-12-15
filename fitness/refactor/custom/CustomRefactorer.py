@@ -11,6 +11,7 @@ from .operators.AddElseAfterReturnBreakContinue import AddElseAfterReturnBreakCo
 from .operators.PowToOperator import PowToOperator
 from .operators.OperatorToPow import OperatorToPow
 from .operators.FormatToStringConcat import FormatToStringConcat
+from .operators.ExprToNaryFunc import ExprToNaryFunc
 
 # [In Progress] custom refactorer
 # method-level refactoring operators
@@ -24,7 +25,8 @@ _operation_classes = {
     "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
-    "FormatToStringConcat": FormatToStringConcat
+    "FormatToStringConcat": FormatToStringConcat,
+    "ExprToNaryFunc": ExprToNaryFunc
 
 }
 
