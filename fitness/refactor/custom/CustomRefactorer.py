@@ -77,7 +77,7 @@ class CustomRefactorer(Refactorer):
             codebase, success = self.operators[operator_name].apply(target)
             success_indicies.append(success)
 
-        filename = '{}{}.py'.format(refactored_files_path, "result")  # id(codebase))
+        filename = '{}{}.py'.format(refactored_files_path, id(codebase))  # "result")
         with open(filename, 'w') as f:
             # print(astor.dump_tree(codebase))
             f.write(astor.to_source(codebase))
