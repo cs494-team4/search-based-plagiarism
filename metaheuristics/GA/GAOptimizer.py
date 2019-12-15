@@ -1,4 +1,6 @@
 import random
+import pickle
+import os
 
 from deap import base
 from deap import creator
@@ -6,6 +8,22 @@ from deap import tools
 
 from metaheuristics.FitnessOptimizer import FitnessOptimizer
 from utils import OrderedSet
+
+
+class FitnessCalculationException(Exception):
+    def __init__(self, expression, message):
+        self.expression = expression
+        self.message = message
+
+
+class Population():
+    def __init__(self, population, generation):
+        pop_list = []
+        for ind in population:
+            pop_list.append(list(ind))
+
+        self.population = pop_list
+        self.gen_number = generation
 
 
 def pick_index_biased(elements_map):
@@ -47,8 +65,16 @@ class GAOptimizer(FitnessOptimizer):
         self.creator = creator
 
     def get_best_individual(self):
-        pop = self.evolve_population()
-        fitnesses = map(self.toolbox.evaluate, pop)
+        try:
+            pop = self.evolve_population()
+            fitnesses = map(self.toolbox.evaluate, pop)
+        except FitnessCalculationException:
+            with open('saved_population.pkl', 'wb') as f:
+                pickle.dump(self.population, f)
+                print(
+                    "Server Error: But don't worry. Current population was saved as saved_population.pkl")
+
+                exit(0)
 
         best_fit = 10 ** 10
         best_ind = None
@@ -94,7 +120,8 @@ class GAOptimizer(FitnessOptimizer):
             for i in range(self.CH_MUTATION_COUNT):
                 individual_list = list(individual)
                 ch_index = random.sample(range(len(individual_list)), 1)[0]
-                ch_gene = pick_index_biased(self.elements_map)  # random.sample(range(len(self.elements)), 1)[0]
+                # random.sample(range(len(self.elements)), 1)[0]
+                ch_gene = pick_index_biased(self.elements_map)
                 individual_list[ch_index] = ch_gene
             return self.creator.Individual(individual_list)
 
@@ -110,14 +137,29 @@ class GAOptimizer(FitnessOptimizer):
             sequence.append(self.elements[index])
 
         # a list of lists !?
-        fit = self.fit([sequence])[0][0]
+        try:
+            fit = self.fit([sequence])[0][0]
+        except (ValueError, IOError) as e:
+            raise FitnessCalculationException(
+                e, "Error while getting fitness value from server")
         # TODO: check is_applicable | self.fit([sequence])[0][1][0]
         return (float(fit), len(individual))
 
     def evolve_population(self, n=10, CXPB=0.5, MUTPB=0.2, NGEN=5):
         toolbox = self.toolbox
 
+        start_gen = 0
         pop = toolbox.population(n)
+
+        if os.path.isfile('saved_population.pkl'):
+            with open('saved_population.pkl', 'rb') as f:
+                p = pickle.load(f)
+                pop = list(
+                    map(lambda x: self.creator.Individual(set(x)), p.population))
+                start_gen = p.gen_number
+                print("start from {}th generation".format(start_gen))
+
+        self.population = Population(pop, start_gen)
         print(pop)
 
         fitnesses = map(toolbox.evaluate, pop)
@@ -125,7 +167,7 @@ class GAOptimizer(FitnessOptimizer):
         for ind, fit in zip(pop, fitnesses):
             ind.fitness.values = fit
 
-        for g in range(NGEN):
+        for g in range(start_gen, NGEN):
             average_fitness = sum(
                 map(lambda x: self.toolbox.evaluate(x)[0], pop)) / len(pop)
             if (str(g)[-1] == '0'):
@@ -158,12 +200,15 @@ class GAOptimizer(FitnessOptimizer):
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+
             fitnesses = map(toolbox.evaluate, invalid_ind)
+
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
 
             # The population is entirely replaced by the offspring
             pop[:] = offspring
+            self.population = Population(pop, g+1)
             print(pop)
 
         return pop
