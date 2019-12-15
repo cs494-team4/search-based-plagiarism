@@ -12,6 +12,7 @@ from .operators.StaticToInstance import StaticToInstance
 from .operators.MethodPushDown import MethodPushDown
 from .operators.PowToOperator import PowToOperator
 from .operators.OperatorToPow import OperatorToPow
+from .operators.FillInDefaultArguments import FillInDefaultArguments
 from .operators.FormatToStringConcat import FormatToStringConcat
 from .operators.Identity import Identity
 from .operators.Rename import Rename
@@ -26,11 +27,13 @@ _operation_classes = {
     "SplitAndConditional": SplitAndConditional,
     "MergeNestedIfStatement": MergeNestedIfStatement,
     "SplitOrConditional": SplitOrConditional,
-    # "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
+    "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
     "StaticToInstance": StaticToInstance,
     "MethodPushDown": MethodPushDown,
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
+    "FillInDefaultArguments": FillInDefaultArguments,
+    # "FormatToStringConcat": FormatToStringConcat,
     # "Rename": Rename,
     "FormatToStringConcat": FormatToStringConcat,
     "ExprToNaryFunc": ExprToNaryFunc

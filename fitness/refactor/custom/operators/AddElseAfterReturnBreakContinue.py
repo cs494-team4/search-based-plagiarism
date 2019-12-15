@@ -1,5 +1,7 @@
-import astor
 import ast
+
+import astor
+
 from .RefactorOperator import RefactorOperator
 
 '''
@@ -43,7 +45,7 @@ class AddElseAfterReturnBreakContinue(RefactorOperator):
         return (isinstance(node.body[-1], ast.Return)
                 or isinstance(node.body[-1], ast.Break)
                 or isinstance(node.body[-1], ast.Continue)) \
-               and len(node.orelse) < 1
+               and len(node.orelse) == 0
 
 
 class OrConditionalSplitter(astor.TreeWalk):
@@ -61,8 +63,9 @@ class OrConditionalSplitter(astor.TreeWalk):
             cur_index = self.parent.index(curr_node)
             parents = self.parent
             after_if = parents[cur_index + 1:]
-            new_if = ast.If(curr_node.test, curr_node.body, after_if)
-            parents[cur_index:] = [new_if]
+            curr_node.orelse = after_if
+
+            parents[cur_index:] = [curr_node]
 
 
 class SearchSplitAbleIfOr(astor.TreeWalk):

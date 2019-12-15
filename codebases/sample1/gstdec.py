@@ -46,6 +46,7 @@ from __future__ import with_statement
 from __future__ import division
 
 import gi
+
 gi.require_version('Gst', '1.0')
 from gi.repository import GLib, Gst
 
@@ -65,7 +66,6 @@ try:
 except ImportError:
     from urllib import quote
 
-
 QUEUE_SIZE = 10
 BUFFER_SIZE = 10
 SENTINEL = '__GSTDEC_SENTINEL__'
@@ -79,6 +79,7 @@ class GStreamerError(DecodeError):
 
 class UnknownTypeError(GStreamerError):
     """Raised when Gstreamer can't decode the given file type."""
+
     def __init__(self, streaminfo):
         super(UnknownTypeError, self).__init__(
             "can't decode stream: " + streaminfo
@@ -95,6 +96,7 @@ class NoStreamError(GStreamerError):
     """Raised when the file was read successfully but no audio streams
     were found.
     """
+
     def __init__(self):
         super(NoStreamError, self).__init__('no audio streams found')
 
@@ -110,6 +112,7 @@ class IncompleteGStreamerError(GStreamerError):
     """Raised when necessary components of GStreamer (namely, the
     principal plugin packages) are missing.
     """
+
     def __init__(self):
         super(IncompleteGStreamerError, self).__init__(
             'missing GStreamer base plugins'
@@ -122,6 +125,7 @@ _shared_loop_thread = None
 _loop_thread_lock = threading.RLock()
 
 Gst.init(None)
+
 
 def get_loop_thread():
     """Get the shared main-loop thread.
@@ -138,6 +142,7 @@ def get_loop_thread():
 class MainLoopThread(threading.Thread):
     """A daemon thread encapsulating a Gobject main loop.
     """
+
     def __init__(self):
         super(MainLoopThread, self).__init__()
         self.loop = GLib.MainLoop.new(None, False)
@@ -166,6 +171,7 @@ class GstAudioFile(object):
     Alternatively, of course, one can just use the file as a context
     manager, as shown above.
     """
+
     def __init__(self, path):
         self.running = False
         self.finished = False

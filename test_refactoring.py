@@ -6,10 +6,10 @@ The edited file will be stored in temp/
 """
 
 # Path to the input codebase (singular python file at the moment)
-file_path = "codebases/sample1/test_file.py"
+file_path = "codebases/sample1/test.py"
 
 # Class name of the refactoring you want to test
-refactoring_type = "FillInDefaultArguments"
+refactoring_type = "MergeNestedIfStatement"
 
 # Index of target you want to apply the refactoring to
 # -1 if you just want a display of the targets (to check if there are any)
@@ -29,5 +29,6 @@ print('targets: {}\n'.format(targets))
 if target_index >= 0:
     sequences = list()
     sequences.append([(refactoring_type, targets[target_index])])
+    print(f'sequences: {sequences}')
     fitness_value = fit(sequences)[0]
     print(fitness_value)

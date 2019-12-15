@@ -1,7 +1,7 @@
-import astor
 import ast
 
-import utils as u
+import astor
+
 from .RefactorOperator import RefactorOperator
 
 '''
@@ -54,7 +54,6 @@ class OrConditionalSplitter(astor.TreeWalk):
         if id(self.cur_node) == self.target \
                 and SplitOrConditional.is_applicable(self.cur_node):
             self.applied = True
-
             parent_list = self.parent
             if_stmt = self.cur_node
             cur_index = parent_list.index(if_stmt)
@@ -63,7 +62,7 @@ class OrConditionalSplitter(astor.TreeWalk):
             body_list = if_stmt.body
             orelse_list = if_stmt.orelse
             new_if = ast.If(and_left, body_list, [
-                            ast.If(and_right, body_list, [])])
+                ast.If(and_right, body_list, [])])
             # u.print_node(and_left)
             # u.print_node(and_right)
 

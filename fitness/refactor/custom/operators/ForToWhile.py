@@ -1,4 +1,5 @@
 import ast
+
 import astor
 
 from .RefactorOperator import RefactorOperator
@@ -12,7 +13,7 @@ class ForToWhile(RefactorOperator):
 
     def apply(self, target):
         replacer = ReplaceForToWhile(target)
-        #replacer.set_target(target)
+        # replacer.set_target(target)
         replacer.walk(self.codebase)
         return self.codebase, replacer.applied
 
@@ -39,10 +40,7 @@ class ReplaceForToWhile(astor.TreeWalk):
     def pre_For(self):
         if id(self.cur_node) == self.target \
                 and ForToWhile.is_applicable(self.cur_node):
-
-            # print("*** Refactor For => While: Node {}".format(self.target))
-            # print("[Before Refactoring]")
-            # print(astor.to_source(self.cur_node))
+            self.applied = True
 
             _target = astor.to_source(self.cur_node.target).strip()
             _iter = astor.to_source(self.cur_node.iter).strip()
@@ -53,14 +51,9 @@ class ReplaceForToWhile(astor.TreeWalk):
 
             body.insert(0, ast.parse("{}={}[i]".format(_target, _iter)))
             body.append(ast.parse("i+=1"))
-
             while_stmt.body = body
             while_stmt.orelse = self.cur_node.orelse
-
             self.replace(module_stmt)
-
-            # print("[After Refactoring]")
-            # print_node(module_stmt)
 
 
 class SearchRefactorablesForLoop(astor.TreeWalk):

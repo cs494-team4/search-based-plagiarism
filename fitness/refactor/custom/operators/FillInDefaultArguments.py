@@ -74,10 +74,11 @@ class SearchFillInFDefaultArguments(astor.TreeWalk):
 
     def pre_Call(self):
         node = self.cur_node
-        fun_def = next(x for x in self.fun_defs if x.name == node.func.id)
-        if fun_def is not None \
-                and len(node.args) + len(node.keywords) < len(fun_def.args.defaults):
-            self.targets.append(id(node))
+        if isinstance(node.func, ast.Name):
+            fun_def = next((x for x in self.fun_defs if x.name == node.func.id), None)
+            if fun_def is not None \
+                    and len(node.args) + len(node.keywords) < len(fun_def.args.defaults):
+                self.targets.append(id(node))
 
     # search for a function definition
     def pre_FunctionDef(self):

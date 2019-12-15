@@ -37,6 +37,7 @@ class ClassicalSimulator(BasicEngine):
     controls, NOTs, and any BasicMathGate. Supports reading/writing directly
     from/to bits and registers of bits.
     """
+
     def __init__(self):
         BasicEngine.__init__(self)
         self._state = 0

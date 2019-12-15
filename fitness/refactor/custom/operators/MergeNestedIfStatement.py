@@ -1,5 +1,7 @@
-import astor
 import ast
+
+import astor
+
 from .RefactorOperator import RefactorOperator
 
 '''
@@ -62,12 +64,22 @@ class NestedIfStatementMerger(astor.TreeWalk):
             second_test = second_if.test
             second_body = second_if.body
             second_else = second_if.orelse
-            new_first_if = ast.If(first_test, first_body[:second_index], first_else)
+            results = list()
+            if len(first_body[:second_index]) != 0:
+                new_first_if = ast.If(first_test, first_body[:second_index], [])
+                results.append(new_first_if)
+
             cur_index = self.parent.index(self.cur_node)
-            new_third_if = ast.If(first_test, second_else + first_body[second_index + 1:], [])
+            # new_third_if = ast.If(first_test, second_else + first_body[second_index + 1:], first_else)
             and_op = ast.BoolOp(ast.And(), [first_test, second_test])
-            new_second_if = ast.If(and_op, second_body, [new_third_if])
-            self.parent[cur_index:cur_index + 1] = [new_first_if, new_second_if]
+            if len(first_else) != 0:
+                new_third_if = ast.If(ast.UnaryOp(ast.Not(), first_test), first_else, [])
+                new_second_if = ast.If(and_op, second_body, [new_third_if])
+            else:
+                new_second_if = ast.If(and_op, second_body, [])
+
+            results.append(new_second_if)
+            self.parent[cur_index:cur_index + 1] = results
 
 
 class SearchMergeAbleNestedIfStatement(astor.TreeWalk):
