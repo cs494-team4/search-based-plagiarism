@@ -5,7 +5,7 @@ from string import Formatter
 from .RefactorOperator import RefactorOperator
 
 
-# currently only supporting default argument formatstrings ({} but not {name} )
+# currently only supporting default argument formatstring ({} but not {name} )
 
 class FormatToStringConcat(RefactorOperator):
     def __init__(self, codebase):

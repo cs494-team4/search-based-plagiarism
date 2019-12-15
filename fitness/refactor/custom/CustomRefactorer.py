@@ -12,6 +12,7 @@ from .operators.MergeNestedIfStatement import MergeNestedIfStatement
 from .operators.MethodPushDown import MethodPushDown
 from .operators.OperatorToPow import OperatorToPow
 from .operators.PowToOperator import PowToOperator
+from .operators.Rename import Rename
 from .operators.SplitAndConditional import SplitAndConditional
 from .operators.SplitOrConditional import SplitOrConditional
 from .operators.StaticToInstance import StaticToInstance
@@ -31,8 +32,7 @@ _operation_classes = {
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
     "FillInDefaultArguments": FillInDefaultArguments,
-    # "FormatToStringConcat": FormatToStringConcat,
-    # "Rename": Rename,
+    "Rename": Rename,
     "FormatToStringConcat": FormatToStringConcat,
     "ExprToNaryFunc": ExprToNaryFunc
 
@@ -77,7 +77,7 @@ class CustomRefactorer(Refactorer):
             codebase, success = self.operators[operator_name].apply(target)
             success_indicies.append(success)
 
-        filename = '{}{}.py'.format(refactored_files_path, id(codebase))  # "result")
+        filename = '{}{}.py'.format(refactored_files_path, "result")  # id(codebase))
         with open(filename, 'w') as f:
             # print(astor.dump_tree(codebase))
             f.write(astor.to_source(codebase))

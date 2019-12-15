@@ -1,14 +1,8 @@
 import py_compile
-
 from fitness.RefactorFitness import RefactorFitness
 
-"""
-Tests a specified refactoring on a codebase.
-The edited file will be stored in temp/
-"""
-
 # Path to the input codebase (singular python file at the moment)
-file_path = "codebases/sample1/_classical_simulator.py"
+file_path = "codebases/sample1/RightRecursive.py"
 
 fit = RefactorFitness(codebase=file_path, refactorer_engine='custom', similarity_client='test_dummy')
 print(f'refactoring_type: {fit.available_refactorings}')

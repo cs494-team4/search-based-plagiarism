@@ -1,9 +1,9 @@
-import astor
 import ast
-import random
-import string
+
+import astor
 
 from .RefactorOperator import RefactorOperator
+
 
 # rename variable, class, function name
 
