@@ -1,17 +1,17 @@
 # Search Based Software Plagiarism
 
 ## Adding new refactorers
--FortoWhile\
--SplitAndConditional\
--MergeNestedIfStatement\
--SplitOrConditional\
--AddElseAfterReturnBreakContinue\
--StaticToInstance\
--MethodPushDown\
--PowToOperator\
--OperatorToPow\
--FormatToStringConcat\
--Rename
+- [x] FortoWhile
+- [x] SplitAndConditional
+- [x] MergeNestedIfStatement
+- [x] SplitOrConditional
+- [x] AddElseAfterReturnBreakContinue
+- [x] StaticToInstance
+- [x] MethodPushDown
+- [x] PowToOperator
+- [x] OperatorToPow
+- [x] FormatToStringConcat
+- [x] Rename
 
 
 ## Adding new software similarity measurements
