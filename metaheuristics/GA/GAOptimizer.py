@@ -1,12 +1,11 @@
-from metaheuristics.FitnessOptimizer import FitnessOptimizer
-
 import random
-
-from utils import OrderedSet
 
 from deap import base
 from deap import creator
 from deap import tools
+
+from metaheuristics.FitnessOptimizer import FitnessOptimizer
+from utils import OrderedSet
 
 
 def pick_index_biased(elements_map):
@@ -23,9 +22,9 @@ class GAOptimizer(FitnessOptimizer):
     def __init__(self, elements, fitness_func):
         super().__init__(elements, fitness_func)
 
-        self.ADD_MUTATION_COUNT = 5
-        self.SUB_MUTATION_COUNT = 5
-        self.CH_MUTATION_COUNT = 5
+        self.ADD_MUTATION_COUNT = 4
+        self.SUB_MUTATION_COUNT = 2
+        self.CH_MUTATION_COUNT = 2
 
         creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
         creator.create("Individual", OrderedSet, fitness=creator.FitnessMin)
@@ -62,11 +61,6 @@ class GAOptimizer(FitnessOptimizer):
         print('best fitness: {}'.format(best_fit))
         return [self.elements[index] for index in best_ind]
 
-    # moves Identity elements to the right
-    # e.g. [0,1,0,2] -> [1,2,0,0]
-    def clean_up_individual(self, individual):
-        return sorted(individual, key=lambda x: 1 if x == self.IDENTITY else 0)
-
     def mate(self, individual1, individual2, indpb):
         length = min(len(individual1), len(individual2))
         ind1 = list(individual1)
@@ -78,13 +72,13 @@ class GAOptimizer(FitnessOptimizer):
 
         return self.creator.Individual(ind1), self.creator.Individual(ind2)
 
-    # todo: test mutation algorithm
     def mutate(self, individual):
+
         def add_mutation():
             old_len = len(individual)
             while len(individual) < old_len + self.ADD_MUTATION_COUNT \
                     and len(individual) < len(self.elements):
-                new_gene = random.sample(range(len(self.elements)), 1)[0]
+                new_gene = pick_index_biased(self.elements_map)
                 individual.add(new_gene)
             return individual
 
@@ -100,7 +94,7 @@ class GAOptimizer(FitnessOptimizer):
             for i in range(self.CH_MUTATION_COUNT):
                 individual_list = list(individual)
                 ch_index = random.sample(range(len(individual_list)), 1)[0]
-                ch_gene = random.sample(range(len(self.elements)), 1)[0]
+                ch_gene = pick_index_biased(self.elements_map)  # random.sample(range(len(self.elements)), 1)[0]
                 individual_list[ch_index] = ch_gene
             return self.creator.Individual(individual_list)
 
@@ -135,13 +129,13 @@ class GAOptimizer(FitnessOptimizer):
             average_fitness = sum(
                 map(lambda x: self.toolbox.evaluate(x)[0], pop)) / len(pop)
             if (str(g)[-1] == '0'):
-                print('{}st generation: {}'.format(g+1, average_fitness))
+                print('{}st generation: {}'.format(g + 1, average_fitness))
             elif (str(g)[-1] == '1'):
-                print('{}nd generation: {}'.format(g+1, average_fitness))
+                print('{}nd generation: {}'.format(g + 1, average_fitness))
             elif (str(g)[-1] == '2'):
-                print('{}rd generation: {}'.format(g+1, average_fitness))
+                print('{}rd generation: {}'.format(g + 1, average_fitness))
             else:
-                print('{}th generation: {}'.format(g+1, average_fitness))
+                print('{}th generation: {}'.format(g + 1, average_fitness))
 
             # Select the next generation individuals
             offspring = toolbox.select(pop, len(pop))

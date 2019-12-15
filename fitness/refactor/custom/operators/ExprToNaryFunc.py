@@ -1,13 +1,11 @@
 import ast
 import random
 import string
-
 import astor
-
 from .RefactorOperator import RefactorOperator
 
 
-# TODO test the thing
+# TODO test the thing ... so so done :]
 class ExprToNaryFunc(RefactorOperator):
     def __init__(self, codebase):
         self.codebase = codebase
