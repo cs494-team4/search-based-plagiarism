@@ -1,9 +1,9 @@
-import astor
 import ast
 import random
 import string
 
-from utils import print_node
+import astor
+
 from .RefactorOperator import RefactorOperator
 
 
@@ -14,7 +14,7 @@ class ExprToNaryFunc(RefactorOperator):
         self.targets = []
 
     def apply(self, target):
-        replacer = ExprToNaryFuncReplacer(target)
+        replacer = ExprToNaryFuncReplacer(target, self.codebase)
         replacer.walk(self.codebase)
         return self.codebase, replacer.applied
 
@@ -33,9 +33,10 @@ class ExprToNaryFunc(RefactorOperator):
 
 class ExprToNaryFuncReplacer(astor.TreeWalk):
 
-    def __init__(self, target):
+    def __init__(self, target, root):
         astor.TreeWalk.__init__(self)
         self.target = target
+        self.root = root
         self.applied = False
 
     def pre_BinOp(self):
@@ -51,11 +52,18 @@ class ExprToNaryFuncReplacer(astor.TreeWalk):
             walker.walk(fun_body[0])
 
             call = ast.Call(ast.Name(fun_name, ast.Store()), walker.args, [])
-            fun = ast.FunctionDef(fun_name, ast.arguments(args=walker.arg_names,kwarg=None,vararg=None, defaults=[]), fun_body , [], None)
+            fun = ast.FunctionDef(fun_name, ast.arguments(args=walker.arg_names, kwarg=None, vararg=None, defaults=[]),
+                                  fun_body, [], None)
 
+            # TODO: parent can be a return statement, can be Compare
+            #  #see "TD example for return statement as parent for expression"
+            insert_list = self.root.body
+            for elem in insert_list:
+                if not (isinstance(elem, ast.Import) or isinstance(elem, ast.ImportFrom)):
+                    index = insert_list.index(elem)
+                    insert_list.insert(index, fun)
+                    break
             self.replace(call)
-            self.parent.insert(0, fun)
-
 
 class BinaryWalker(astor.TreeWalk):
     def __init__(self):
@@ -68,15 +76,14 @@ class BinaryWalker(astor.TreeWalk):
 
         if not isinstance(self.cur_node.left, ast.BinOp):
             self.args.append(self.cur_node.left)
-            self.cur_node.left = ast.Name(str(chr(self.index)),ast.Store()) #ast.Constant(self.index)
+            self.cur_node.left = ast.Name(str(chr(self.index)), ast.Store())  # ast.Constant(self.index)
             self.arg_names.append(str(chr(self.index)))
             self.index += 1
         if not isinstance(self.cur_node.right, ast.BinOp):
             self.args.append(self.cur_node.right)
-            self.cur_node.right = ast.Name(str(chr(self.index)),ast.Store()) #ast.Constant(self.index)
+            self.cur_node.right = ast.Name(str(chr(self.index)), ast.Store())  # ast.Constant(self.index)
             self.arg_names.append(str(chr(self.index)))
             self.index += 1
-
 
 
 class SearchBinExpr(astor.TreeWalk):

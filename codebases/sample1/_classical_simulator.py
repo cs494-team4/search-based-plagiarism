@@ -75,6 +75,7 @@ class ClassicalSimulator(BasicEngine):
         qubit = self._convert_logical_to_mapped_qubit(qubit)
         return self._read_mapped_bit(qubit)
 
+    # TODO: example for return statement as parent for expression
     def _read_mapped_bit(self, mapped_qubit):
         """ Internal use only. Does not change logical to mapped qubits."""
         p = self._bit_positions[mapped_qubit.id]

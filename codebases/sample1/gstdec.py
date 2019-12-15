@@ -1,49 +1,5 @@
-# Reference:
-# https://github.com/beetbox/audioread/blob/master/audioread/gstdec.py
-
-# This file is part of audioread.
-# Copyright 2011, Adrian Sampson.
-#
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
-#
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-
-"""Use Gstreamer to decode audio files.
-To read an audio file, pass it to the constructor for GstAudioFile()
-and then iterate over the contents:
-    >>> f = GstAudioFile('something.mp3')
-    >>> try:
-    >>>     for block in f:
-    >>>         ...
-    >>> finally:
-    >>>     f.close()
-Note that there are a few complications caused by Gstreamer's
-asynchronous architecture. This module spawns its own Gobject main-
-loop thread; I'm not sure how that will interact with other main
-loops if your program has them. Also, in order to stop the thread
-and terminate your program normally, you need to call the close()
-method on every GstAudioFile you create. Conveniently, the file can be
-used as a context manager to make this simpler:
-    >>> with GstAudioFile('something.mp3') as f:
-    >>>     for block in f:
-    >>>         ...
-Iterating a GstAudioFile yields strings containing short integer PCM
-data. You can also read the sample rate and channel count from the
-file:
-    >>> with GstAudioFile('something.mp3') as f:
-    >>>     print f.samplerate
-    >>>     print f.channels
-    >>>     print f.duration
-"""
-from __future__ import with_statement
 from __future__ import division
+from __future__ import with_statement
 
 import gi
 
@@ -209,7 +165,6 @@ class GstAudioFile(object):
             'caps',
             Gst.Caps.from_string('audio/x-raw, format=(string)S16LE'),
         )
-        # TODO set endianness?
         # Set up the characteristics of the output. We don't want to
         # drop any data (nothing is real-time here); we should bound
         # the memory usage of the internal queue; and, most

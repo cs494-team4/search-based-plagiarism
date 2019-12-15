@@ -5,7 +5,6 @@ import http.client
 import json
 import urllib
 
-# TODO Move all these secret keys to a single file. Maybe use a ConfigParser for this?
 MICROSOFT_CV_SUBSCRIPTION_KEY = '92e7b0d9a88a4a6495c5b40481cbe81e'
 
 TWITTER_API_KEY = 'WwA5L9U5PCqbnlfblKwKF0LEo'
@@ -51,13 +50,12 @@ def no_adult_content(body):
 
 # no_adult_content("{\"url\":\"http://www.gettyimages.ca/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg\"}")
 
-# TODO this function's variable names are pretty confusing, and there's not enough informative
-#      commenting for a 80 line function. The function is likely still too long.
+
 def twitter_present(link):
     import re
     from twython import Twython  # pip install twython
     u = 0
-    twitterorno = 0  # TODO Use booleans here
+    twitterorno = 0
     thetwittertext = ""
     twitterusers = []
 
@@ -104,7 +102,7 @@ def twitter_present(link):
                 user_timeline = twitter.get_user_timeline(screen_name=p, count=1000)
             except TwythonError as e:
                 # print(e)
-                pass  # TODO shouldn't be ignoring exceptions.
+                pass
             for tweets in user_timeline:
                 formattedtweets = str(tweets['text'].encode('utf-8')).replace("b\'", "").replace("\'", "")
                 formattedtweets = re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '', formattedtweets)
@@ -140,7 +138,7 @@ def verified_links(url):
     elif "blacklists" in data:
         return "Blacklisted"
     else:
-        return "not verified"  # TODO Why are we returning Strings and not booleans here?
+        return "not verified"
 
 
 def summarization(url):
@@ -171,7 +169,7 @@ def url_title(link):
     alchemy_language = AlchemyLanguageV1(api_key=IBM_WATSON_API_KEY)
     alchemyres = json.dumps(alchemy_language.title(url=link), indent=2)
     data = json.loads(alchemyres)
-    return data["title"]  # TODO Check whether json response is empty or not
+    return data["title"]
 
 
 def other_links(url):

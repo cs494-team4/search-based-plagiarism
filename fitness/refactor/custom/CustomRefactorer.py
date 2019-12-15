@@ -1,22 +1,20 @@
-from fitness.refactor.Refactorer import Refactorer
-import abc
-import astor
-import ast
 import os
-from .operators.ForToWhile import ForToWhile
-from .operators.SplitAndConditional import SplitAndConditional
-from .operators.MergeNestedIfStatement import MergeNestedIfStatement
-from .operators.SplitOrConditional import SplitOrConditional
+
+import astor
+
+from fitness.refactor.Refactorer import Refactorer
 from .operators.AddElseAfterReturnBreakContinue import AddElseAfterReturnBreakContinue
-from .operators.StaticToInstance import StaticToInstance
-from .operators.MethodPushDown import MethodPushDown
-from .operators.PowToOperator import PowToOperator
-from .operators.OperatorToPow import OperatorToPow
-from .operators.FillInDefaultArguments import FillInDefaultArguments
-from .operators.FormatToStringConcat import FormatToStringConcat
-from .operators.Identity import Identity
-from .operators.Rename import Rename
 from .operators.ExprToNaryFunc import ExprToNaryFunc
+from .operators.FillInDefaultArguments import FillInDefaultArguments
+from .operators.ForToWhile import ForToWhile
+from .operators.FormatToStringConcat import FormatToStringConcat
+from .operators.MergeNestedIfStatement import MergeNestedIfStatement
+from .operators.MethodPushDown import MethodPushDown
+from .operators.OperatorToPow import OperatorToPow
+from .operators.PowToOperator import PowToOperator
+from .operators.SplitAndConditional import SplitAndConditional
+from .operators.SplitOrConditional import SplitOrConditional
+from .operators.StaticToInstance import StaticToInstance
 
 # [In Progress] custom refactorer
 # method-level refactoring operators
@@ -79,7 +77,7 @@ class CustomRefactorer(Refactorer):
             codebase, success = self.operators[operator_name].apply(target)
             success_indicies.append(success)
 
-        filename = '{}{}.py'.format(refactored_files_path, id(codebase))
+        filename = '{}{}.py'.format(refactored_files_path, "result")  # id(codebase))
         with open(filename, 'w') as f:
             # print(astor.dump_tree(codebase))
             f.write(astor.to_source(codebase))
