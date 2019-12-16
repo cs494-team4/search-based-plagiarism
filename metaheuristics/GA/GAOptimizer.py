@@ -14,11 +14,11 @@ from metaheuristics.FitnessOptimizer import FitnessOptimizer
 from utils import OrderedSet
 from utils.nsga import sortNondominated
 
-NUM_POP = 10
+NUM_POP = 30
 CXPB = 0.5
 MUTPB = 1
-NGEN = 2
-INITIAL_SEQUENCE_LEN = 20
+NGEN = 50
+INITIAL_SEQUENCE_LEN = 30
 
 
 class FitnessCalculationException(Exception):
