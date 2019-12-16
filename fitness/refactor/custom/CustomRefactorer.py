@@ -34,7 +34,7 @@ _operation_classes = {
     "FillInDefaultArguments": FillInDefaultArguments,
     "Rename": Rename,
     "FormatToStringConcat": FormatToStringConcat,
-    "ExprToNaryFunc": ExprToNaryFunc
+    # "ExprToNaryFunc": ExprToNaryFunc
 
 }
 

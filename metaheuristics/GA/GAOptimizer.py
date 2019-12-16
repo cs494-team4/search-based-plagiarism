@@ -2,12 +2,17 @@ import random
 import pickle
 import os
 
+import numpy
+import matplotlib.pyplot as plt
+
+
 from deap import base
 from deap import creator
 from deap import tools
 
 from metaheuristics.FitnessOptimizer import FitnessOptimizer
 from utils import OrderedSet
+from utils.nsga import sortNondominated
 
 
 class FitnessCalculationException(Exception):
@@ -128,7 +133,7 @@ class GAOptimizer(FitnessOptimizer):
         mutations = [add_mutation, rm_mutation, ch_mutation]
         mutation = random.sample(mutations, 1)[0]
 
-        print(str(mutation))
+        # print(str(mutation))
         return mutation()
 
     def evaluate(self, individual):
@@ -145,10 +150,21 @@ class GAOptimizer(FitnessOptimizer):
         # TODO: check is_applicable | self.fit([sequence])[0][1][0]
         return float(fit), len(individual)
 
-    def evolve_population(self, n=10, CXPB=0.5, MUTPB=0.2, NGEN=5):
+    def evolve_population(self, n=10, CXPB=0.5, MUTPB=1, NGEN=1):
         toolbox = self.toolbox
 
         start_gen = 0
+
+
+        stats = tools.Statistics(lambda ind: ind.fitness.values)
+        stats.register("avg", numpy.mean, axis=0)
+        stats.register("std", numpy.std, axis=0)
+        stats.register("min", numpy.min, axis=0)
+        stats.register("max", numpy.max, axis=0)
+
+        logbook = tools.Logbook()
+        logbook.header = "gen", "evals", "std", "min", "avg", "max"    
+        
         pop = toolbox.population(n)
 
         if os.path.isfile('saved_population.pkl'):
@@ -159,25 +175,39 @@ class GAOptimizer(FitnessOptimizer):
                 start_gen = p.gen_number
                 print("start from {}th generation".format(start_gen))
 
+
+
+
         self.population = Population(pop, start_gen)
-        print(pop)
+        # print(pop)
 
         fitnesses = map(toolbox.evaluate, pop)
 
         for ind, fit in zip(pop, fitnesses):
             ind.fitness.values = fit
 
+        # Compile statistics about the population
+        record = stats.compile(pop)
+        logbook.record(gen=0, evals=len(pop), **record)
+        # print("logbook stream of first: ", logbook.stream)
+
+
         for g in range(start_gen, NGEN):
             average_fitness = sum(
                 map(lambda x: self.toolbox.evaluate(x)[0], pop)) / len(pop)
             if str(g)[-1] == '0':
-                print('{}st generation: {}'.format(g + 1, average_fitness))
+                print('Result of {}st generation: {}'.format(g + 1, average_fitness))
+                print('Start of {}nd generation'.format(g+2))
             elif str(g)[-1] == '1':
-                print('{}nd generation: {}'.format(g + 1, average_fitness))
+                print('Result of {}nd generation: {}'.format(g + 1, average_fitness))
+                print('Start of {}rd generation'.format(g+2))
             elif str(g)[-1] == '2':
-                print('{}rd generation: {}'.format(g + 1, average_fitness))
+                print('Result of {}rd generation: {}'.format(g + 1, average_fitness))
+                print('Start of {}th generation'.format(g+2))
             else:
-                print('{}th generation: {}'.format(g + 1, average_fitness))
+                print('Result of {}th generation: {}'.format(g + 1, average_fitness))
+                print('Start of {}th generation'.format(g+2))
+
 
             # Select the next generation individuals
             offspring = toolbox.select(pop, len(pop))
@@ -209,5 +239,41 @@ class GAOptimizer(FitnessOptimizer):
             # The population is entirely replaced by the offspring
             pop[:] = offspring
             self.population = Population(pop, g+1)
-            print(pop)
+            # print(pop)
+
+            record = stats.compile(pop)
+            logbook.record(gen=g+1, evals=len(invalid_ind), **record)
+            # print("logbook stream: ", logbook.stream)
+            # print("lenpop: ", len(pop))
+
+
+        #plot pareto front
+        # print("pop: ", pop)
+        # front2 = numpy.array([ind.fitness.values for ind in pop])
+        fronts = sortNondominated(pop, k = len(pop))
+        # print("Front: ", front2)
+        # print("pareto fronts: ", sortNondominated(pop, k = len(pop)))
+        # front_num = len(DominatingGroup)
+        DominatingGroup = [pop[int(i)] for i in fronts[-1]]
+        DominatingGroup2 = [pop[int(i)] for i in fronts[-2]]
+        # DominatingGroup3 = [pop[int(i)] for i in fronts[-3]]
+        print("DominatingGroup: ", DominatingGroup)
+        front = numpy.array([ind.fitness.values for ind in DominatingGroup])
+        front2 = numpy.array([ind.fitness.values for ind in DominatingGroup2])
+        # front3 = numpy.array([ind.fitness.values for ind in DominatingGroup3])
+
+        # print("Fixed front: ", front)
+        fig = plt.figure()
+        ax1 = fig.add_subplot(211)
+        ax2 = fig.add_subplot(211)
+        # ax3 = fig.add_subplot(211)
+
+        ax1.plot(front[:,1], front[:,0], c="b")
+        ax2.plot(front2[:,1], front2[:,0], c="r")
+        # ax3.plot(front3[:,1], front3[:,0], c="g")
+
+        # plt.axis("tight")
+        plt.show()
         return pop
+
+

@@ -7,7 +7,7 @@ fit = RefactorFitness(codebase='codebases/sample2/sample_original.py',
 
 
 refactorings = fit.available_refactorings
-print('candidates: {}\n'.format(refactorings))
+# print('candidates: {}\n'.format(refactorings))
 
 fitness_optimizer = FitnessOptimizerFactory.create(
     "ga", refactorings, fit)
@@ -15,3 +15,4 @@ fitness_optimizer = FitnessOptimizerFactory.create(
 
 result_sequence = fitness_optimizer.get_best_individual()
 print(result_sequence)
+
