@@ -3,11 +3,7 @@ import py_compile
 from fitness.RefactorFitness import RefactorFitness
 
 # Path to the input codebase (singular python file at the moment)
-<<<<<<< HEAD
 file_path = "codebases/sample1/RightRecursive.py"
-=======
-file_path = "codebases/sample2/a01-sample.py"
->>>>>>> Handle no matching lines case from MOSS
 
 fit = RefactorFitness(codebase=file_path,
                       refactorer_engine='custom', similarity_client='moss')

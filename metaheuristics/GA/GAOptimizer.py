@@ -228,7 +228,6 @@ class GAOptimizer(FitnessOptimizer):
             for mutant in offspring:
                 if random.random() < MUTPB:
                     mutant = toolbox.mutate(mutant)
-                    del mutant.fitness.values
                 new_offspring.append(mutant)
 
             # Evaluate the individuals with an invalid fitness
@@ -288,6 +287,10 @@ class GAOptimizer(FitnessOptimizer):
                 [pop[i] for i in fronts[-n]], key=lambda individual: individual.fitness.values[0])
 
             # print("{}: ".format(n), dominating_group)
+            print("fitness values(scores): ", list(
+                map(lambda i: i.fitness.values[0], dominating_group)))
+            print("fitness values(lengths): ", list(
+                map(lambda i: i.fitness.values[1], dominating_group)))
             fronts_to_print.append(numpy.array(
                 [ind.fitness.values for ind in dominating_group]))
 
