@@ -14,11 +14,11 @@ from metaheuristics.FitnessOptimizer import FitnessOptimizer
 from utils import OrderedSet
 from utils.nsga import sortNondominated
 
-NUM_POP = 20
+NUM_POP = 25
 CXPB = 0.5
-MUTPB = 1
-NGEN = 10
-INITIAL_SEQUENCE_LEN = 30
+MUTPB = 0.7
+NGEN = 100
+INITIAL_SEQUENCE_LEN = 15
 
 
 class FitnessCalculationException(Exception):
@@ -51,9 +51,9 @@ class GAOptimizer(FitnessOptimizer):
     def __init__(self, elements, fitness_func):
         super().__init__(elements, fitness_func)
 
-        self.ADD_MUTATION_COUNT = 4
-        self.SUB_MUTATION_COUNT = 2
-        self.CH_MUTATION_COUNT = 2
+        self.ADD_MUTATION_COUNT = 6
+        self.SUB_MUTATION_COUNT = 8
+        self.CH_MUTATION_COUNT = 4
 
         self.sequence_length = INITIAL_SEQUENCE_LEN
         self.archive = []
@@ -211,6 +211,41 @@ class GAOptimizer(FitnessOptimizer):
         logbook.record(gen=0, evals=len(pop), **record)
         # print("logbook stream of first: ", logbook.stream)
 
+        def show_plot(g):
+            fronts = sortNondominated(self.archive, k=len(self.archive))
+            fronts_to_print = []
+
+            for n in range(min(5, len(fronts))):
+                dominating_group = sorted(
+                    [self.archive[i] for i in fronts[n]], key=lambda individual: individual.fitness.values[0])
+
+                print("{}: ".format(n), list(
+                    map(lambda i: list(map(lambda e: self.elements[e], i)), dominating_group)))
+                print('\n')
+                print("fitness values(scores): ", list(
+                    map(lambda i: i.fitness.values[0], dominating_group)))
+                print("fitness values(lengths): ", list(
+                    map(lambda i: i.fitness.values[1], dominating_group)))
+                print("{}: ".format(n), dominating_group)
+                for ind in dominating_group:
+                    print(self.count_indivudial_refatorings(ind))
+
+                fronts_to_print.append(numpy.array(
+                    [ind.fitness.values for ind in dominating_group]))
+
+            fig = plt.figure(figsize=(6, 6))
+
+            colors = ['p', 'b', 'g', 'y', 'r']
+
+            for n in range(min(5, len(fronts_to_print))):
+                plt.plot(fronts_to_print[n][:, 1], fronts_to_print[n][:, 0],
+                         colors[n], marker='o', markersize=6, linestyle='-')
+
+            plt.title('Pareto Fronts of the {} Generation'.format(g))
+            plt.xlabel('number of refactorings')
+            plt.ylabel('similarity score(%)')
+            plt.savefig('figs/{}_gen{}.png'.format(id(self.archive), g))
+
         for g in range(start_gen, NGEN):
 
             # Select the next generation individuals
@@ -245,6 +280,8 @@ class GAOptimizer(FitnessOptimizer):
             fronts = sortNondominated(pop, k=len(pop))
             best_front = [pop[i] for i in fronts[0]]
             self.archive.extend(best_front)
+            if g % 10 == 0:
+                show_plot('{}th'.format(g+1))
             # print(pop)
 
             record = stats.compile(pop)
@@ -285,42 +322,7 @@ class GAOptimizer(FitnessOptimizer):
         # plot pareto front
         self.archive.extend(pop)
 
-        fronts = sortNondominated(self.archive, k=len(self.archive))
-        fronts_to_print = []
-
-        for n in range(min(5, len(fronts))):
-            dominating_group = sorted(
-                [self.archive[i] for i in fronts[n]], key=lambda individual: individual.fitness.values[0])
-
-            print("{}: ".format(n), list(
-                map(lambda i: list(map(lambda e: self.elements[e], i)), dominating_group)))
-            print('\n')
-            print("fitness values(scores): ", list(
-                map(lambda i: i.fitness.values[0], dominating_group)))
-            print("fitness values(lengths): ", list(
-                map(lambda i: i.fitness.values[1], dominating_group)))
-            print("{}: ".format(n), dominating_group)
-            for ind in dominating_group:
-                print(self.count_indivudial_refatorings(ind))
-
-            fronts_to_print.append(numpy.array(
-                [ind.fitness.values for ind in dominating_group]))
-
-
-        fig = plt.figure(figsize=(6, 6))
-
-        colors = ['p', 'b', 'g', 'y', 'r']
-
-        for n in range(min(5, len(fronts_to_print))):
-            plt.plot(fronts_to_print[n][:, 1], fronts_to_print[n][:, 0],
-                     colors[n], marker='o', markersize=6, linestyle='-')
-
-
-
-        plt.title('Pareto Fronts of the last Generation')
-        plt.xlabel('number of refactorings')
-        plt.ylabel('similarity score(%)')
-        plt.show()
+        show_plot('last')
 
         return pop
 
@@ -335,4 +337,3 @@ class GAOptimizer(FitnessOptimizer):
             counting_dict[_type] += 1
 
         return counting_dict
-
