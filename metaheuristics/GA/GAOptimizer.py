@@ -213,11 +213,11 @@ class GAOptimizer(FitnessOptimizer):
             offspring = list(map(toolbox.clone, offspring))
 
             # Apply crossover and mutation on the offspring
-            for child1, child2 in zip(offspring[::2], offspring[1::2]):
-                if random.random() < CXPB:
-                    toolbox.mate(child1, child2, 0.5)  # TODO: scale INDPB
-                    del child1.fitness.values
-                    del child2.fitness.values
+            # for child1, child2 in zip(offspring[::2], offspring[1::2]):
+            #     if random.random() < CXPB:
+            #         toolbox.mate(child1, child2, 0.5)  # TODO: scale INDPB
+            #         del child1.fitness.values
+            #         del child2.fitness.values
 
             new_offspring = list()
             for mutant in offspring:
