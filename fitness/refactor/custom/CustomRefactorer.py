@@ -27,7 +27,7 @@ from .operators.CompToNaryFunc import CompToNaryFunc
 _operation_classes = {
     "ForToWhile": ForToWhile,
     "SplitAndConditional": SplitAndConditional,
-    #"MergeNestedIfStatement": MergeNestedIfStatement,
+    "MergeNestedIfStatement": MergeNestedIfStatement,
     "SplitOrConditional": SplitOrConditional,
     "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
     "StaticToInstance": StaticToInstance,

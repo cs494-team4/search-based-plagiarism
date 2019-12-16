@@ -1,11 +1,13 @@
 a, b = True, True
 
+print(1)
 if a:
     print(2)
-    print(3)
     if b:
-        print(4)
+        print(3)
     else:
-        print(5)
+        print(4)
+    print(5)
 else:
-    print(8)
+    print(6)
+print(7)
