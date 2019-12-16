@@ -283,13 +283,20 @@ class GAOptimizer(FitnessOptimizer):
         fronts = sortNondominated(pop, k=len(pop))
         fronts_to_print = []
 
+
+
+
         for n in range(1, min(6, len(fronts)+1)):
             dominating_group = sorted(
                 [pop[i] for i in fronts[-n]], key=lambda individual: individual.fitness.values[0])
 
-            # print("{}: ".format(n), dominating_group)
+            print("{}: ".format(n), dominating_group)
+            for ind in dominating_group:
+                print(self.count_indivudial_refatorings(ind))
+
             fronts_to_print.append(numpy.array(
                 [ind.fitness.values for ind in dominating_group]))
+
 
         fig = plt.figure(figsize=(6, 6))
 
@@ -299,9 +306,24 @@ class GAOptimizer(FitnessOptimizer):
             plt.plot(fronts_to_print[n][:, 1], fronts_to_print[n][:, 0],
                      colors[n], marker='o', markersize=6)
 
+
+
         plt.title('Pareto Fronts of the last Generation')
         plt.xlabel('number of refactorings')
         plt.ylabel('similarity score(%)')
         plt.show()
 
         return pop
+
+    def count_indivudial_refatorings(self, individual):
+        counting_dict = dict()
+        for key in self.elements_map.keys():
+            counting_dict[key] = 0
+
+        print()
+        for ref in individual:
+            _type, _ = self.elements[ref]
+            counting_dict[_type] += 1
+
+        return counting_dict
+
