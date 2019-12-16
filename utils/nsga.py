@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 
-def dominates(obj1, obj2, sign=[1, 1]):
+def dominates(obj1, obj2, sign=[-1, -1]):
     """Return true if each objective of *self* is not strictly worse than
             the corresponding objective of *other* and at least one objective is
             strictly better.
