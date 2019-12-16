@@ -17,7 +17,4 @@ print(f'sequence: {[str(i) + ": " + str(x) for i, x in enumerate(sequence)]}')
 fitness_value = fit([sequence])
 suc = fitness_value[0][1]
 print(f'suc: {[str(i) + ": " + str(x) for i, x in enumerate(suc)]}')
-
 py_compile.compile("./temp/result.py", )
-
-# try and compile result.py
