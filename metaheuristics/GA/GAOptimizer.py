@@ -143,7 +143,7 @@ class GAOptimizer(FitnessOptimizer):
             raise FitnessCalculationException(
                 e, "Error while getting fitness value from server")
         # TODO: check is_applicable | self.fit([sequence])[0][1][0]
-        return (float(fit), len(individual))
+        return float(fit), len(individual)
 
     def evolve_population(self, n=10, CXPB=0.5, MUTPB=0.2, NGEN=5):
         toolbox = self.toolbox
@@ -170,11 +170,11 @@ class GAOptimizer(FitnessOptimizer):
         for g in range(start_gen, NGEN):
             average_fitness = sum(
                 map(lambda x: self.toolbox.evaluate(x)[0], pop)) / len(pop)
-            if (str(g)[-1] == '0'):
+            if str(g)[-1] == '0':
                 print('{}st generation: {}'.format(g + 1, average_fitness))
-            elif (str(g)[-1] == '1'):
+            elif str(g)[-1] == '1':
                 print('{}nd generation: {}'.format(g + 1, average_fitness))
-            elif (str(g)[-1] == '2'):
+            elif str(g)[-1] == '2':
                 print('{}rd generation: {}'.format(g + 1, average_fitness))
             else:
                 print('{}th generation: {}'.format(g + 1, average_fitness))
@@ -210,5 +210,4 @@ class GAOptimizer(FitnessOptimizer):
             pop[:] = offspring
             self.population = Population(pop, g+1)
             print(pop)
-
         return pop

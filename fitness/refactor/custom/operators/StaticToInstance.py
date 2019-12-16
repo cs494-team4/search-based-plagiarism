@@ -2,10 +2,11 @@
 # https://julien.danjou.info/python-ast-checking-method-declaration/
 
 import ast
+
 import astor
 
-from utils import print_node
 from .RefactorOperator import RefactorOperator
+
 
 class StaticToInstance(RefactorOperator):
     def __init__(self, codebase):
@@ -24,7 +25,7 @@ class StaticToInstance(RefactorOperator):
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
-    
+
     @staticmethod
     def is_applicable(node):
         if isinstance(node, ast.FunctionDef):
@@ -39,30 +40,32 @@ class StaticToInstance(RefactorOperator):
         else:
             return False
 
+
 class ChangeStaticToInstance(astor.TreeWalk):
     def __init__(self, target):
         astor.TreeWalk.__init__(self)
         self.target = target
         self.applied = False
-    
+
     # TODO: change Class.static_method() usage as self.instance_method() usage also, if any
     def pre_FunctionDef(self):  # TODO: check FunctionDef or ClassDef?
         if id(self.cur_node) == self.target \
-            and StaticToInstance.is_applicable(self.cur_node):
+                and StaticToInstance.is_applicable(self.cur_node):
             self.applied = True
             curr_node = self.cur_node
             # insert keyword SELF in FunctionDef
             curr_node.args.args.insert(0, ast.arg(arg='self', annotation=None))
             # remove @staticmethod decorator in decorator_list
             curr_node.decorator_list = [d for d in self.cur_node.decorator_list \
-                                            if not (isinstance(d, ast.Name) and d.id == 'staticmethod')]
+                                        if not (isinstance(d, ast.Name) and d.id == 'staticmethod')]
             # print_node(curr_node)
             self.replace(curr_node)
+
 
 class SearchRefactorableStatic(astor.TreeWalk):
     def __init__(self):
         astor.TreeWalk.__init__(self)
-        self.targets = []   # save refactorable functions
+        self.targets = []  # save refactorable functions
 
     def pre_ClassDef(self):
         class_stmt = self.cur_node
@@ -74,9 +77,6 @@ class SearchRefactorableStatic(astor.TreeWalk):
             # Check that it has a decorator
             for decorator in body_item.decorator_list:
                 if (isinstance(decorator, ast.Name)
-                    and decorator.id == 'staticmethod'):
+                        and decorator.id == 'staticmethod'):
                     # It's a static function
                     self.targets.append(id(body_item))
-
-
-            

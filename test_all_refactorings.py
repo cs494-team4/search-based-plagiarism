@@ -1,8 +1,9 @@
 import py_compile
+
 from fitness.RefactorFitness import RefactorFitness
 
 # Path to the input codebase (singular python file at the moment)
-file_path = "codebases/sample1/RightRecursive.py"
+file_path = "codebases/sample1/_classical_simulator.py"
 
 fit = RefactorFitness(codebase=file_path, refactorer_engine='custom', similarity_client='test_dummy')
 print(f'refactoring_type: {fit.available_refactorings}')

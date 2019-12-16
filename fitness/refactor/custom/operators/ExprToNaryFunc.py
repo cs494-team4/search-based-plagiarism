@@ -2,6 +2,7 @@ import ast
 import random
 import string
 import astor
+
 from .RefactorOperator import RefactorOperator
 
 
@@ -62,6 +63,7 @@ class ExprToNaryFuncReplacer(astor.TreeWalk):
                     insert_list.insert(index, fun)
                     break
             self.replace(call)
+
 
 class BinaryWalker(astor.TreeWalk):
     def __init__(self):
