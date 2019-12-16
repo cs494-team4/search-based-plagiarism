@@ -1,6 +1,11 @@
 # Search Based Software Plagiarism
 
+## How to Run
+
+Requires Python version `>=3.6`.
+
 ## Adding new refactorers
+
 - [x] FortoWhile
 - [x] SplitAndConditional
 - [x] MergeNestedIfStatement
@@ -13,10 +18,9 @@
 - [x] FormatToStringConcat
 - [x] Rename
 
-
 ## Adding new software similarity measurements
-We are currently using MOSS(https://theory.stanford.edu/~aiken/moss/) or pycode-similar(https://github.com/fyrestone/pycode_similar.git).
 
+We are currently using MOSS(https://theory.stanford.edu/~aiken/moss/) or pycode-similar(https://github.com/fyrestone/pycode_similar.git).
 
 ## CustomRefactorer
 
@@ -25,7 +29,7 @@ We are currently using MOSS(https://theory.stanford.edu/~aiken/moss/) or pycode-
 New refactorings should subclass `RefactorOperator` and implement the specified methods
 (Look at ForToWhile.py for an example).
 
-You will also need to add the refactorer to the 
+You will also need to add the refactorer to the
 `_operation_classes`
 list in CustomRefactorer.
 
