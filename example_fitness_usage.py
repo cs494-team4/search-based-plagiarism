@@ -15,4 +15,3 @@ fitness_optimizer = FitnessOptimizerFactory.create(
 
 result_sequence = fitness_optimizer.get_best_individual()
 print(result_sequence)
-

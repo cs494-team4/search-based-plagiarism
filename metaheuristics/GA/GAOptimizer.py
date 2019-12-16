@@ -14,10 +14,10 @@ from metaheuristics.FitnessOptimizer import FitnessOptimizer
 from utils import OrderedSet
 from utils.nsga import sortNondominated
 
-NUM_POP = 20
+NUM_POP = 10
 CXPB = 0.5
 MUTPB = 1
-NGEN = 20
+NGEN = 2
 INITIAL_SEQUENCE_LEN = 20
 
 
@@ -242,6 +242,10 @@ class GAOptimizer(FitnessOptimizer):
             # The population is entirely replaced by the offspring
             pop[:] = offspring
             self.population = Population(pop, g+1)
+
+            fronts = sortNondominated(pop, k=len(pop))
+            best_front = [pop[i] for i in fronts[0]]
+            self.archive.extend(best_front)
             # print(pop)
 
             record = stats.compile(pop)
@@ -280,16 +284,20 @@ class GAOptimizer(FitnessOptimizer):
                     print('End of Evolution')
 
         # plot pareto front
-        fronts = sortNondominated(pop, k=len(pop))
+        self.archive.extend(pop)
+
+        fronts = sortNondominated(self.archive, k=len(self.archive))
         fronts_to_print = []
 
-
-
-
-        for n in range(1, min(6, len(fronts)+1)):
+        for n in range(min(5, len(fronts))):
             dominating_group = sorted(
-                [pop[i] for i in fronts[-n]], key=lambda individual: individual.fitness.values[0])
+                [self.archive[i] for i in fronts[n]], key=lambda individual: individual.fitness.values[0])
 
+            # print("{}: ".format(n), dominating_group)
+            print("fitness values(scores): ", list(
+                map(lambda i: i.fitness.values[0], dominating_group)))
+            print("fitness values(lengths): ", list(
+                map(lambda i: i.fitness.values[1], dominating_group)))
             print("{}: ".format(n), dominating_group)
             for ind in dominating_group:
                 print(self.count_indivudial_refatorings(ind))
@@ -304,7 +312,7 @@ class GAOptimizer(FitnessOptimizer):
 
         for n in range(min(5, len(fronts_to_print))):
             plt.plot(fronts_to_print[n][:, 1], fronts_to_print[n][:, 0],
-                     colors[n], marker='o', markersize=6)
+                     colors[n], marker='o', markersize=6, linestyle='-')
 
 
 
