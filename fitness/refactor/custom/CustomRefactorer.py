@@ -35,7 +35,7 @@ _operation_classes = {
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
     "FillInDefaultArguments": FillInDefaultArguments,
-    #"Rename": Rename,
+    "Rename": Rename,
     "FormatToStringConcat": FormatToStringConcat,
     "ArtithmToNaryFunc": ArithmToNaryFunc,
     "CompToNaryFunc": CompToNaryFunc

@@ -3,3 +3,4 @@ mosspy
 astor
 numpy
 deap
+matplotlib

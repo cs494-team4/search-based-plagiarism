@@ -2,12 +2,17 @@ import random
 import pickle
 import os
 
+import numpy
+import matplotlib.pyplot as plt
+
+
 from deap import base
 from deap import creator
 from deap import tools
 
 from metaheuristics.FitnessOptimizer import FitnessOptimizer
 from utils import OrderedSet
+from utils.nsga import sortNondominated
 
 
 class FitnessCalculationException(Exception):
@@ -88,14 +93,29 @@ class GAOptimizer(FitnessOptimizer):
         return [self.elements[index] for index in best_ind]
 
     def mate(self, individual1, individual2, indpb):
-        length = min(len(individual1), len(individual2))
         ind1 = list(individual1)
         ind2 = list(individual2)
-        for index in range(length):
+        swapped = False
+
+        if len(ind2) < len(ind1):
+            swapped = True
+            ind1, ind2 = ind2, ind1     # ind1 has smaller or equal length than ind2
+        len_short = len(ind1)
+        len_long = len(ind2)
+        
+        for index in range(len_short):
             if random.random() < indpb:
                 ind1[index], ind2[index] \
                     = ind2[index], ind1[index]
-
+        for remain_i in range(len_long - len_short):
+            if random.random() < indpb:
+                ind1.append(ind2[len_short + remain_i])
+                ind2[len_short + remain_i] = -1
+        ind2 = [i for i in ind2 if i >= 0]
+        
+        if swapped:
+            ind2, ind1 = ind1, ind2
+        
         return self.creator.Individual(ind1), self.creator.Individual(ind2)
 
     def mutate(self, individual):
@@ -128,7 +148,7 @@ class GAOptimizer(FitnessOptimizer):
         mutations = [add_mutation, rm_mutation, ch_mutation]
         mutation = random.sample(mutations, 1)[0]
 
-        print(str(mutation))
+        # print(str(mutation))
         return mutation()
 
     def evaluate(self, individual):
@@ -145,10 +165,21 @@ class GAOptimizer(FitnessOptimizer):
         # TODO: check is_applicable | self.fit([sequence])[0][1][0]
         return float(fit), len(individual)
 
-    def evolve_population(self, n=10, CXPB=0.5, MUTPB=0.2, NGEN=5):
+    def evolve_population(self, n=20, CXPB=0.5, MUTPB=1, NGEN=1):
         toolbox = self.toolbox
 
         start_gen = 0
+
+
+        stats = tools.Statistics(lambda ind: ind.fitness.values)
+        stats.register("avg", numpy.mean, axis=0)
+        stats.register("std", numpy.std, axis=0)
+        stats.register("min", numpy.min, axis=0)
+        stats.register("max", numpy.max, axis=0)
+
+        logbook = tools.Logbook()
+        logbook.header = "gen", "evals", "std", "min", "avg", "max"    
+        
         pop = toolbox.population(n)
 
         if os.path.isfile('saved_population.pkl'):
@@ -159,25 +190,25 @@ class GAOptimizer(FitnessOptimizer):
                 start_gen = p.gen_number
                 print("start from {}th generation".format(start_gen))
 
+
+
+
         self.population = Population(pop, start_gen)
-        print(pop)
+        # print(pop)
 
         fitnesses = map(toolbox.evaluate, pop)
 
         for ind, fit in zip(pop, fitnesses):
             ind.fitness.values = fit
 
+        # Compile statistics about the population
+        record = stats.compile(pop)
+        logbook.record(gen=0, evals=len(pop), **record)
+        # print("logbook stream of first: ", logbook.stream)
+
+
         for g in range(start_gen, NGEN):
-            average_fitness = sum(
-                map(lambda x: self.toolbox.evaluate(x)[0], pop)) / len(pop)
-            if str(g)[-1] == '0':
-                print('{}st generation: {}'.format(g + 1, average_fitness))
-            elif str(g)[-1] == '1':
-                print('{}nd generation: {}'.format(g + 1, average_fitness))
-            elif str(g)[-1] == '2':
-                print('{}rd generation: {}'.format(g + 1, average_fitness))
-            else:
-                print('{}th generation: {}'.format(g + 1, average_fitness))
+
 
             # Select the next generation individuals
             offspring = toolbox.select(pop, len(pop))
@@ -185,11 +216,11 @@ class GAOptimizer(FitnessOptimizer):
             offspring = list(map(toolbox.clone, offspring))
 
             # Apply crossover and mutation on the offspring
-            for child1, child2 in zip(offspring[::2], offspring[1::2]):
-                if random.random() < CXPB:
-                    toolbox.mate(child1, child2, 0.5)  # TODO: scale INDPB
-                    del child1.fitness.values
-                    del child2.fitness.values
+            # for child1, child2 in zip(offspring[::2], offspring[1::2]):
+            #     if random.random() < CXPB:
+            #         toolbox.mate(child1, child2, 0.5)  # TODO: scale INDPB
+            #         del child1.fitness.values
+            #         del child2.fitness.values
 
             new_offspring = list()
             for mutant in offspring:
@@ -209,5 +240,75 @@ class GAOptimizer(FitnessOptimizer):
             # The population is entirely replaced by the offspring
             pop[:] = offspring
             self.population = Population(pop, g+1)
-            print(pop)
+            # print(pop)
+
+            record = stats.compile(pop)
+            logbook.record(gen=g+1, evals=len(invalid_ind), **record)
+            # print("logbook stream: ", logbook.stream)
+            # print("lenpop: ", len(pop))
+            average_fitness = sum(map(lambda x: self.toolbox.evaluate(x)[0], pop)) / len(pop)
+            if str(g)[-1] == '0':
+                print('Result of {}st generation: {}'.format(g + 1, average_fitness))
+                if g<NGEN-1:
+                    print('Start of {}nd generation'.format(g+2))
+                else:
+                    print('End of Evolution')
+            elif str(g)[-1] == '1':
+                print('Result of {}nd generation: {}'.format(g + 1, average_fitness))
+                if g<NGEN-1:
+                    print('Start of {}rd generation'.format(g+2))
+                else:
+                    print('End of Evolution')
+            elif str(g)[-1] == '2':
+                print('Result of {}rd generation: {}'.format(g + 1, average_fitness))
+                if g<NGEN-1:
+                    print('Start of {}th generation'.format(g+2))
+                else:
+                    print('End of Evolution')
+            else:
+                print('Result of {}th generation: {}'.format(g + 1, average_fitness))
+                if g<NGEN-1:
+                    print('Start of {}th generation'.format(g+2))
+                else:
+                    print('End of Evolution')
+
+
+
+        #plot pareto front
+        fronts = sortNondominated(pop, k = len(pop))
+
+        DominatingGroup = sorted([pop[i] for i in fronts[-1]], key = lambda individual : individual.fitness.values[0])
+        DominatingGroup2 = sorted([pop[i] for i in fronts[-2]], key = lambda individual : individual.fitness.values[0])
+        DominatingGroup3 = sorted([pop[i] for i in fronts[-3]], key = lambda individual : individual.fitness.values[0])
+        DominatingGroup4 = sorted([pop[i] for i in fronts[-4]], key = lambda individual : individual.fitness.values[0])
+        DominatingGroup5 = sorted([pop[i] for i in fronts[-5]], key = lambda individual : individual.fitness.values[0])
+        
+        print("1: ", DominatingGroup)
+        print("2: ", DominatingGroup2)
+        print("3: ", DominatingGroup3)
+        print("4: ", DominatingGroup4)
+        print("5: ", DominatingGroup5)
+
+
+
+        front = numpy.array([ind.fitness.values for ind in DominatingGroup])
+        front2 = numpy.array([ind.fitness.values for ind in DominatingGroup2])
+        front3 = numpy.array([ind.fitness.values for ind in DominatingGroup3])
+        front4 = numpy.array([ind.fitness.values for ind in DominatingGroup4])
+        front5 = numpy.array([ind.fitness.values for ind in DominatingGroup5])
+
+        fig = plt.figure(figsize=(6, 6))
+
+        plt.plot(front[:,1], front[:,0], 'p', marker='o', markersize=6)
+        plt.plot(front2[:,1], front2[:,0], 'b', marker='o', markersize=6)
+        plt.plot(front3[:,1], front3[:,0], 'g', marker='o', markersize=6)
+        plt.plot(front4[:,1], front4[:,0], 'y', marker='o', markersize=6)
+        plt.plot(front5[:,1], front5[:,0], 'r', marker='o', markersize=6)
+
+        plt.xlabel('number of refactorings')
+        plt.ylabel('similarity score(%)')
+        plt.show()
+
         return pop
+
+

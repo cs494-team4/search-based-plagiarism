@@ -22,8 +22,8 @@ class PyCodeSimClient(SimilarityClient):
 
         scores = []
         for index, func_ast_diff_list in results:
-            print('ref: {}'.format(pycode_list[0][0]))
-            print('candidate: {}'.format(pycode_list[index][0]))
+            # print('ref: {}'.format(pycode_list[0][0]))
+            # print('candidate: {}'.format(pycode_list[index][0]))
             sum_total_count = sum(
                 func_diff_info.total_count for func_diff_info in func_ast_diff_list)
             sum_plagiarism_count = sum(
