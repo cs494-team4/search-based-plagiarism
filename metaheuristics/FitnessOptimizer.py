@@ -33,7 +33,6 @@ class FitnessOptimizer(object):
         self.elements = elements
 
         self.fit = fitness_func
-        # check if the number of possible elements is smaller than 5
         self.sequence_length = 10
 
     @abc.abstractmethod
