@@ -56,6 +56,7 @@ class GAOptimizer(FitnessOptimizer):
         self.CH_MUTATION_COUNT = 2
 
         self.sequence_length = INITIAL_SEQUENCE_LEN
+        self.archive = []
 
         creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
         creator.create("Individual", OrderedSet, fitness=creator.FitnessMin)
