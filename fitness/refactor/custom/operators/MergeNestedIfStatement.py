@@ -71,12 +71,19 @@ class NestedIfStatementMerger(astor.TreeWalk):
 
             cur_index = self.parent.index(self.cur_node)
             # new_third_if = ast.If(first_test, second_else + first_body[second_index + 1:], first_else)
-            and_op = ast.BoolOp(ast.And(), [first_test, second_test])
-            if len(first_else) != 0:
-                new_third_if = ast.If(ast.UnaryOp(ast.Not(), first_test), first_else, [])
-                new_second_if = ast.If(and_op, second_body, [new_third_if])
+            first_and_op = ast.BoolOp(ast.And(), [first_test, second_test])
+            second_and_op = ast.BoolOp(ast.And(), [first_test, ast.UnaryOp(ast.Not(), second_test)])
+
+            if first_else or second_else:
+                new_forth_if = ast.If(ast.UnaryOp(ast.Not(), first_test), first_else, [])
+                if second_else:
+                    new_third_if = ast.If(second_and_op, second_else, first_else)
+                    new_second_if = ast.If(first_and_op, second_body, [new_third_if])
+                else:
+                    new_second_if = ast.If(first_and_op, second_body,
+                                           [new_forth_if])
             else:
-                new_second_if = ast.If(and_op, second_body, [])
+                new_second_if = ast.If(first_and_op, second_body, [])
 
             results.append(new_second_if)
             self.parent[cur_index:cur_index + 1] = results

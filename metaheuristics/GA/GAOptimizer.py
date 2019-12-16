@@ -93,14 +93,26 @@ class GAOptimizer(FitnessOptimizer):
         return [self.elements[index] for index in best_ind]
 
     def mate(self, individual1, individual2, indpb):
-        length = min(len(individual1), len(individual2))
         ind1 = list(individual1)
         ind2 = list(individual2)
-        for index in range(length):
+        swapped = False
+        if len(ind2) < len(ind1):
+            swapped = True
+            ind1, ind2 = ind2, ind1     # ind1 has smaller or equal length than ind2
+        
+        for index in range(len(ind1)):
             if random.random() < indpb:
                 ind1[index], ind2[index] \
                     = ind2[index], ind1[index]
-
+        for remain_i in range(len(ind2) - len(ind1)):
+            if random.random() < indpb:
+                ind1.append(ind2[len(ind1) + remain_i])
+                ind2[len(ind1) + remain_i] = -1
+        ind2 = [i for i in ind2 if i >= 0]
+        
+        if swapped:
+            ind2, ind1 = ind1, ind2
+        
         return self.creator.Individual(ind1), self.creator.Individual(ind2)
 
     def mutate(self, individual):
