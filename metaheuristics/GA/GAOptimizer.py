@@ -283,11 +283,11 @@ class GAOptimizer(FitnessOptimizer):
         DominatingGroup4 = sorted([pop[i] for i in fronts[-4]], key = lambda individual : individual.fitness.values[0])
         DominatingGroup5 = sorted([pop[i] for i in fronts[-5]], key = lambda individual : individual.fitness.values[0])
         
-        print("1: ", DominatingGroup)
-        print("2: ", DominatingGroup2)
-        print("3: ", DominatingGroup3)
-        print("4: ", DominatingGroup4)
-        print("5: ", DominatingGroup5)
+        #print("1: ", DominatingGroup)
+        #print("2: ", DominatingGroup2)
+        #print("3: ", DominatingGroup3)
+        #print("4: ", DominatingGroup4)
+        #print("5: ", DominatingGroup5)
 
 
 
@@ -304,7 +304,8 @@ class GAOptimizer(FitnessOptimizer):
         plt.plot(front3[:,1], front3[:,0], 'g', marker='o', markersize=6)
         plt.plot(front4[:,1], front4[:,0], 'y', marker='o', markersize=6)
         plt.plot(front5[:,1], front5[:,0], 'r', marker='o', markersize=6)
-
+	
+        plt.title('Pareto Fronts of the last Generation')
         plt.xlabel('number of refactorings')
         plt.ylabel('similarity score(%)')
         plt.show()
