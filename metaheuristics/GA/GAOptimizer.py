@@ -14,11 +14,11 @@ from metaheuristics.FitnessOptimizer import FitnessOptimizer
 from utils import OrderedSet
 from utils.nsga import sortNondominated
 
-NUM_POP = 10
+NUM_POP = 20
 CXPB = 0.5
 MUTPB = 1
-NGEN = 2
-INITIAL_SEQUENCE_LEN = 20
+NGEN = 10
+INITIAL_SEQUENCE_LEN = 30
 
 
 class FitnessCalculationException(Exception):
@@ -232,11 +232,9 @@ class GAOptimizer(FitnessOptimizer):
                 new_offspring.append(mutant)
 
             # Evaluate the individuals with an invalid fitness
-            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+            fitnesses = map(toolbox.evaluate, offspring)
 
-            fitnesses = map(toolbox.evaluate, invalid_ind)
-
-            for ind, fit in zip(invalid_ind, fitnesses):
+            for ind, fit in zip(offspring, fitnesses):
                 ind.fitness.values = fit
 
             # The population is entirely replaced by the offspring
@@ -249,7 +247,7 @@ class GAOptimizer(FitnessOptimizer):
             # print(pop)
 
             record = stats.compile(pop)
-            logbook.record(gen=g+1, evals=len(invalid_ind), **record)
+            logbook.record(gen=g+1, evals=len(offspring), **record)
             # print("logbook stream: ", logbook.stream)
             # print("lenpop: ", len(pop))
             average_fitness = sum(
@@ -293,7 +291,9 @@ class GAOptimizer(FitnessOptimizer):
             dominating_group = sorted(
                 [self.archive[i] for i in fronts[n]], key=lambda individual: individual.fitness.values[0])
 
-            # print("{}: ".format(n), dominating_group)
+            print("{}: ".format(n), list(
+                map(lambda i: list(map(lambda e: self.elements[e], i)), dominating_group)))
+            print('\n')
             print("fitness values(scores): ", list(
                 map(lambda i: i.fitness.values[0], dominating_group)))
             print("fitness values(lengths): ", list(
