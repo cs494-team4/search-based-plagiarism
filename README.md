@@ -15,7 +15,7 @@
 
 
 ## Adding new software similarity measurements
-We are currently using MOSS(https://theory.stanford.edu/~aiken/moss/).
+We are currently using MOSS(https://theory.stanford.edu/~aiken/moss/) or pycode-similar(https://github.com/fyrestone/pycode_similar.git).
 
 
 ## CustomRefactorer
