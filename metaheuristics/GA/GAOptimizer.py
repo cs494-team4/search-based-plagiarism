@@ -56,6 +56,7 @@ class GAOptimizer(FitnessOptimizer):
         self.CH_MUTATION_COUNT = 2
 
         self.sequence_length = INITIAL_SEQUENCE_LEN
+        self.archive = []
 
         creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
         creator.create("Individual", OrderedSet, fitness=creator.FitnessMin)
@@ -282,9 +283,9 @@ class GAOptimizer(FitnessOptimizer):
         fronts = sortNondominated(pop, k=len(pop))
         fronts_to_print = []
 
-        for n in range(1, min(6, len(fronts)+1)):
+        for n in range(min(5, len(fronts))):
             dominating_group = sorted(
-                [pop[i] for i in fronts[-n]], key=lambda individual: individual.fitness.values[0])
+                [pop[i] for i in fronts[n]], key=lambda individual: individual.fitness.values[0])
 
             # print("{}: ".format(n), dominating_group)
             print("fitness values(scores): ", list(
