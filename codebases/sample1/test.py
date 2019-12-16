@@ -1,5 +1,11 @@
-a, b = 1, 2
+a, b = True, True
 
-if 1 == a:
-    if 2 == b:
-        print(1)
+if a:
+    print(2)
+    print(3)
+    if b:
+        print(4)
+    else:
+        print(5)
+else:
+    print(8)

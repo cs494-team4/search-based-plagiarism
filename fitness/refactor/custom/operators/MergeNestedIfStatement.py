@@ -53,6 +53,7 @@ class NestedIfStatementMerger(astor.TreeWalk):
                 and MergeNestedIfStatement.is_applicable(self.cur_node):
             self.applied = True
             parent_list = self.parent
+            cur_index = self.parent.index(self.cur_node)
 
             first_if = self.cur_node
             first_test = first_if.test
@@ -65,27 +66,22 @@ class NestedIfStatementMerger(astor.TreeWalk):
             second_body = second_if.body
             second_else = second_if.orelse
             results = list()
-            if len(first_body[:second_index]) != 0:
-                new_first_if = ast.If(first_test, first_body[:second_index], [])
-                results.append(new_first_if)
 
-            cur_index = self.parent.index(self.cur_node)
-            # new_third_if = ast.If(first_test, second_else + first_body[second_index + 1:], first_else)
-            first_and_op = ast.BoolOp(ast.And(), [first_test, second_test])
-            second_and_op = ast.BoolOp(ast.And(), [first_test, ast.UnaryOp(ast.Not(), second_test)])
+            if first_body[:second_index]:
+                results.append(ast.If(first_test, first_body[:second_index], []))
 
-            if first_else or second_else:
-                new_forth_if = ast.If(ast.UnaryOp(ast.Not(), first_test), first_else, [])
+            if second_body:
+                a_and_b = ast.BoolOp(ast.And(), [first_test, second_test])
+                if_a_and_b = ast.If(a_and_b, second_body, [])
+                results.append(if_a_and_b)
                 if second_else:
-                    new_third_if = ast.If(second_and_op, second_else, first_else)
-                    new_second_if = ast.If(first_and_op, second_body, [new_third_if])
-                else:
-                    new_second_if = ast.If(first_and_op, second_body,
-                                           [new_forth_if])
-            else:
-                new_second_if = ast.If(first_and_op, second_body, [])
-
-            results.append(new_second_if)
+                    a_and_not_b = ast.BoolOp(ast.And(), [first_test, ast.UnaryOp(ast.Not(), second_test)])
+                    if_a_and_not_b = ast.If(a_and_not_b, second_else, [])
+                    if_a_and_b.orelse = [if_a_and_not_b]
+            if first_body[second_index + 1:]:
+                results.append(ast.If(first_test, first_body[second_index + 1:], first_else))
+            elif first_else:
+                results.append(ast.If(ast.UnaryOp(ast.Not(), first_test), first_else, []))
             self.parent[cur_index:cur_index + 1] = results
 
 
