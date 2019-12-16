@@ -5,7 +5,7 @@ from fitness.RefactorFitness import RefactorFitness
 # Path to the input codebase (singular python file at the moment)
 file_path = "codebases/sample1/_classical_simulator.py"
 
-fit = RefactorFitness(codebase=file_path, refactorer_engine='custom', similarity_client='test_dummy')
+fit = RefactorFitness(codebase=file_path, refactorer_engine='custom', similarity_client='pycode')
 print(f'refactoring_type: {fit.available_refactorings}')
 
 sequence = list()
@@ -18,3 +18,5 @@ fitness_value = fit([sequence])
 suc = fitness_value[0][1]
 print(f'suc: {[str(i) + ": " + str(x) for i, x in enumerate(suc)]}')
 py_compile.compile("./temp/result.py", )
+
+print(f'biggest possible difference: {fitness_value[0][0]}')

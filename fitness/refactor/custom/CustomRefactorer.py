@@ -6,7 +6,7 @@ import ast
 
 from fitness.refactor.Refactorer import Refactorer
 from .operators.AddElseAfterReturnBreakContinue import AddElseAfterReturnBreakContinue
-from .operators.ExprToNaryFunc import ExprToNaryFunc
+from .operators.ArithmToNaryFunc import ArithmToNaryFunc
 from .operators.FillInDefaultArguments import FillInDefaultArguments
 from .operators.ForToWhile import ForToWhile
 from .operators.FormatToStringConcat import FormatToStringConcat
@@ -18,6 +18,7 @@ from .operators.Rename import Rename
 from .operators.SplitAndConditional import SplitAndConditional
 from .operators.SplitOrConditional import SplitOrConditional
 from .operators.StaticToInstance import StaticToInstance
+from .operators.CompToNaryFunc import CompToNaryFunc
 
 # [In Progress] custom refactorer
 # method-level refactoring operators
@@ -26,7 +27,7 @@ from .operators.StaticToInstance import StaticToInstance
 _operation_classes = {
     "ForToWhile": ForToWhile,
     "SplitAndConditional": SplitAndConditional,
-    "MergeNestedIfStatement": MergeNestedIfStatement,
+    #"MergeNestedIfStatement": MergeNestedIfStatement,
     "SplitOrConditional": SplitOrConditional,
     "AddElseAfterReturnBreakContinue": AddElseAfterReturnBreakContinue,
     "StaticToInstance": StaticToInstance,
@@ -34,9 +35,10 @@ _operation_classes = {
     "PowToOperator": PowToOperator,
     "OperatorToPow": OperatorToPow,
     "FillInDefaultArguments": FillInDefaultArguments,
-    "Rename": Rename,
+    #"Rename": Rename,
     "FormatToStringConcat": FormatToStringConcat,
-    "ExprToNaryFunc": ExprToNaryFunc
+    "ArtithmToNaryFunc": ArithmToNaryFunc,
+    "CompToNaryFunc": CompToNaryFunc
 
 }
 

@@ -6,19 +6,19 @@ import astor
 from .RefactorOperator import RefactorOperator
 
 
-# TODO test the thing ... so so done :]
-class ExprToNaryFunc(RefactorOperator):
+
+class ArithmToNaryFunc(RefactorOperator):
     def __init__(self):
         self.targets = []
 
     def apply(self, codebase, target):
-        replacer = ExprToNaryFuncReplacer(target, codebase)
+        replacer = ArithmToNaryFuncReplacer(target, codebase)
         replacer.walk(codebase)
         return codebase, replacer.applied
 
     def search_targets(self, codebase):
         candidates = list()
-        searcher = SearchBinExpr()
+        searcher = SearchBinArithm()
         searcher.walk(codebase)
         candidates.extend(
             [target for target in searcher.targets])
@@ -29,7 +29,7 @@ class ExprToNaryFunc(RefactorOperator):
         return True
 
 
-class ExprToNaryFuncReplacer(astor.TreeWalk):
+class ArithmToNaryFuncReplacer(astor.TreeWalk):
 
     def __init__(self, target, root):
         astor.TreeWalk.__init__(self)
@@ -40,7 +40,7 @@ class ExprToNaryFuncReplacer(astor.TreeWalk):
     def pre_BinOp(self):
         if hasattr(self.cur_node, 'custom_id') \
                 and self.cur_node.custom_id == self.target \
-                and ExprToNaryFunc.is_applicable(self.cur_node):
+                and ArithmToNaryFunc.is_applicable(self.cur_node):
             self.applied = True
 
             # doesn't check for duplicate names atm
@@ -87,11 +87,11 @@ class BinaryWalker(astor.TreeWalk):
             self.index += 1
 
 
-class SearchBinExpr(astor.TreeWalk):
+class SearchBinArithm(astor.TreeWalk):
     def __init__(self):
         astor.TreeWalk.__init__(self)
         self.targets = []  # save parent nodes
 
     def pre_BinOp(self):
-        if ExprToNaryFunc.is_applicable(self.cur_node):
+        if ArithmToNaryFunc.is_applicable(self.cur_node):
             self.targets.append(id(self.cur_node))
