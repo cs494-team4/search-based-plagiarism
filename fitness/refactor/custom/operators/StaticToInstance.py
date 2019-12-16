@@ -27,7 +27,17 @@ class StaticToInstance(RefactorOperator):
     
     @staticmethod
     def is_applicable(node):
-        return True
+        if isinstance(node, ast.FunctionDef):
+            if node.decorator_list:
+                for decorator in node.decorator_list:
+                    if (isinstance(decorator, ast.Name)
+                        and decorator.id == 'staticmethod'):
+                            return node.args.args and (node.args.args[0] != 'self')
+                return False
+            else:
+                return False
+        else:
+            return False
 
 class ChangeStaticToInstance(astor.TreeWalk):
     def __init__(self, target):
