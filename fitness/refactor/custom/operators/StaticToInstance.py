@@ -9,19 +9,18 @@ from .RefactorOperator import RefactorOperator
 
 
 class StaticToInstance(RefactorOperator):
-    def __init__(self, codebase):
-        self.codebase = codebase
+    def __init__(self):
         self.targets = []
 
-    def apply(self, target):
+    def apply(self, codebase, target):
         replacer = ChangeStaticToInstance(target)
-        replacer.walk(self.codebase)
-        return self.codebase, replacer.applied
+        replacer.walk(codebase)
+        return codebase, replacer.applied
 
-    def search_targets(self):
+    def search_targets(self, codebase):
         candidates = list()
         searcher = SearchRefactorableStatic()
-        searcher.walk(self.codebase)
+        searcher.walk(codebase)
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
@@ -49,7 +48,8 @@ class ChangeStaticToInstance(astor.TreeWalk):
 
     # TODO: change Class.static_method() usage as self.instance_method() usage also, if any
     def pre_FunctionDef(self):  # TODO: check FunctionDef or ClassDef?
-        if id(self.cur_node) == self.target \
+        if hasattr(self.cur_node, 'custom_id') \
+                and self.cur_node.custom_id == self.target \
                 and StaticToInstance.is_applicable(self.cur_node):
             self.applied = True
             curr_node = self.cur_node

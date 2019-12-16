@@ -8,19 +8,18 @@ from .RefactorOperator import RefactorOperator
 
 # TODO test the thing ... so so done :]
 class ExprToNaryFunc(RefactorOperator):
-    def __init__(self, codebase):
-        self.codebase = codebase
+    def __init__(self):
         self.targets = []
 
-    def apply(self, target):
-        replacer = ExprToNaryFuncReplacer(target, self.codebase)
-        replacer.walk(self.codebase)
-        return self.codebase, replacer.applied
+    def apply(self, codebase, target):
+        replacer = ExprToNaryFuncReplacer(target, codebase)
+        replacer.walk(codebase)
+        return codebase, replacer.applied
 
-    def search_targets(self):
+    def search_targets(self, codebase):
         candidates = list()
         searcher = SearchBinExpr()
-        searcher.walk(self.codebase)
+        searcher.walk(codebase)
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
@@ -39,7 +38,9 @@ class ExprToNaryFuncReplacer(astor.TreeWalk):
         self.applied = False
 
     def pre_BinOp(self):
-        if id(self.cur_node) == self.target and ExprToNaryFunc.is_applicable(self.cur_node):
+        if hasattr(self.cur_node, 'custom_id') \
+                and self.cur_node.custom_id == self.target \
+                and ExprToNaryFunc.is_applicable(self.cur_node):
             self.applied = True
 
             # doesn't check for duplicate names atm

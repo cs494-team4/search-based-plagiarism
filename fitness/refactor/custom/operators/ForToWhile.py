@@ -7,20 +7,19 @@ from .RefactorOperator import RefactorOperator
 
 class ForToWhile(RefactorOperator):
 
-    def __init__(self, codebase):
-        self.codebase = codebase
+    def __init__(self):
         self.targets = []
 
-    def apply(self, target):
+    def apply(self, codebase, target):
         replacer = ReplaceForToWhile(target)
         # replacer.set_target(target)
-        replacer.walk(self.codebase)
-        return self.codebase, replacer.applied
+        replacer.walk(codebase)
+        return codebase, replacer.applied
 
-    def search_targets(self):
+    def search_targets(self, codebase):
         candidates = list()
         searcher = SearchRefactorablesForLoop()
-        searcher.walk(self.codebase)
+        searcher.walk(codebase)
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
@@ -38,10 +37,10 @@ class ReplaceForToWhile(astor.TreeWalk):
         self.applied = False
 
     def pre_For(self):
-        if id(self.cur_node) == self.target \
+        if hasattr(self.cur_node, 'custom_id') \
+                and self.cur_node.custom_id == self.target \
                 and ForToWhile.is_applicable(self.cur_node):
             self.applied = True
-
             _target = astor.to_source(self.cur_node.target).strip()
             _iter = astor.to_source(self.cur_node.iter).strip()
             body = self.cur_node.body

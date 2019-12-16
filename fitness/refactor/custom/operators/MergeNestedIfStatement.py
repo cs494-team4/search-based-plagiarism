@@ -19,19 +19,18 @@ if a and b:
 
 class MergeNestedIfStatement(RefactorOperator):
 
-    def __init__(self, codebase):
-        self.codebase = codebase
+    def __init__(self):
         self.targets = []
 
-    def apply(self, target):
+    def apply(self, codebase, target):
         replacer = NestedIfStatementMerger(target)
-        replacer.walk(self.codebase)
-        return self.codebase, replacer.applied
+        replacer.walk(codebase)
+        return codebase, replacer.applied
 
-    def search_targets(self):
+    def search_targets(self, codebase):
         candidates = list()
         searcher = SearchMergeAbleNestedIfStatement()
-        searcher.walk(self.codebase)
+        searcher.walk(codebase)
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
@@ -49,7 +48,8 @@ class NestedIfStatementMerger(astor.TreeWalk):
         self.applied = False
 
     def pre_If(self):
-        if id(self.cur_node) == self.target \
+        if hasattr(self.cur_node, 'custom_id') \
+                and self.cur_node.custom_id == self.target \
                 and MergeNestedIfStatement.is_applicable(self.cur_node):
             self.applied = True
             parent_list = self.parent
