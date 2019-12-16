@@ -1,9 +1,9 @@
 from fitness.RefactorFitness import RefactorFitness
 from metaheuristics.FitnessOptimizerFactory import FitnessOptimizerFactory
 
-fit = RefactorFitness(codebase='samples/sample_original.py',
+fit = RefactorFitness(codebase='codebases/sample2/sample_original.py',
                       refactorer_engine='custom',
-                      similarity_client='moss')
+                      similarity_client='pycode')
 
 
 refactorings = fit.available_refactorings

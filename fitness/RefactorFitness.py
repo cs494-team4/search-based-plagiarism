@@ -7,9 +7,9 @@ import copy
 class RefactorFitness:
 
     def __init__(self,
-                 codebase='sample1/sample_original.py',
+                 codebase='codebases/sample2/sample_original.py',
                  refactorer_engine='rope',
-                 similarity_client='moss'):
+                 similarity_client='pycode'):
         """
         :param codebase: path of codebase to apply refactorings to
         :param refactorer_engine: name of the refactoring framework to use
