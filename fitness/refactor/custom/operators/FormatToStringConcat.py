@@ -8,19 +8,18 @@ from .RefactorOperator import RefactorOperator
 # currently only supporting default argument formatstring ({} but not {name} )
 
 class FormatToStringConcat(RefactorOperator):
-    def __init__(self, codebase):
-        self.codebase = codebase
+    def __init__(self):
         self.targets = []
 
-    def apply(self, target): # return success
+    def apply(self, codebase, target): # return success
         replacer = FormatToStringConcatReplacer(target)
-        replacer.walk(self.codebase)
-        return self.codebase, replacer.applied
+        replacer.walk(codebase)
+        return codebase, replacer.applied
 
-    def search_targets(self):
+    def search_targets(self, codebase):
         candidates = list()
         searcher = SearchFormatString()
-        searcher.walk(self.codebase)
+        searcher.walk(codebase)
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
@@ -51,7 +50,9 @@ class FormatToStringConcatReplacer(astor.TreeWalk):
         self.values = list()
 
     def pre_Call(self):
-        if id(self.cur_node) == self.target and FormatToStringConcat.is_applicable(self.cur_node):
+        if hasattr(self.cur_node, 'custom_id') \
+                and self.cur_node.custom_id == self.target \
+                and FormatToStringConcat.is_applicable(self.cur_node):
             self.applied = True
 
             fragments = [x for x in Formatter().parse(self.cur_node.func.value.s)]

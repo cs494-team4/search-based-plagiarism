@@ -6,19 +6,18 @@ from .RefactorOperator import RefactorOperator
 
 class FillInDefaultArguments(RefactorOperator):
 
-    def __init__(self, codebase):
-        self.codebase = codebase
+    def __init__(self):
         self.targets = []
 
-    def apply(self, target):
+    def apply(self, codebase, target):
         replacer = DefaultArgumentsFiller(target)
-        replacer.walk(self.codebase)
-        return self.codebase, replacer.applied
+        replacer.walk(codebase)
+        return codebase, replacer.applied
 
-    def search_targets(self):
+    def search_targets(self, codebase):
         candidates = list()
         searcher = SearchFillInFDefaultArguments()
-        searcher.walk(self.codebase)
+        searcher.walk(codebase)
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
@@ -41,7 +40,8 @@ class DefaultArgumentsFiller(astor.TreeWalk):
     def pre_Call(self):
         node = self.cur_node
         fun_def = next(x for x in self.fun_defs if x.name == node.func.id)
-        if id(self.cur_node) == self.target \
+        if hasattr(self.cur_node, 'custom_id') \
+                and self.cur_node.custom_id == self.target \
                 and FillInDefaultArguments.is_applicable((node, fun_def)):
             self.applied = True
             node = self.cur_node

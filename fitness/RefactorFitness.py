@@ -18,7 +18,7 @@ class RefactorFitness:
 
         self.codebase = codebase
         self.refactor = RefactorerFactory.create(
-            refactorer_engine, copy.deepcopy(codebase))
+            refactorer_engine, self.codebase)
         self.similarity = SimilarityClientFactory.create(similarity_client)
 
         self.available_refactorings = self.refactor.refactorings

@@ -23,19 +23,18 @@ for elem in range(5):
 
 class AddElseAfterReturnBreakContinue(RefactorOperator):
 
-    def __init__(self, codebase):
-        self.codebase = codebase
+    def __init__(self):
         self.targets = []
 
-    def apply(self, target):
+    def apply(self, codebase, target):
         replacer = OrConditionalSplitter(target)
-        replacer.walk(self.codebase)
-        return self.codebase, replacer.applied
+        replacer.walk(codebase)
+        return codebase, replacer.applied
 
-    def search_targets(self):
+    def search_targets(self, codebase):
         candidates = list()
         searcher = SearchSplitAbleIfOr()
-        searcher.walk(self.codebase)
+        searcher.walk(codebase)
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
@@ -56,7 +55,8 @@ class OrConditionalSplitter(astor.TreeWalk):
         self.applied = False
 
     def pre_If(self):
-        if id(self.cur_node) == self.target \
+        if hasattr(self.cur_node, 'custom_id') \
+                and self.cur_node.custom_id == self.target \
                 and AddElseAfterReturnBreakContinue.is_applicable(self.cur_node):
             self.applied = True
             curr_node = self.cur_node
@@ -75,8 +75,5 @@ class SearchSplitAbleIfOr(astor.TreeWalk):
 
     def pre_If(self):
         if_stmt = self.cur_node
-        if (isinstance(if_stmt.body[-1], ast.Return)
-            or isinstance(if_stmt.body[-1], ast.Break)
-            or isinstance(if_stmt.body[-1], ast.Continue)) \
-                and len(if_stmt.orelse) < 1:
+        if AddElseAfterReturnBreakContinue.is_applicable(if_stmt):
             self.targets.append(id(if_stmt))

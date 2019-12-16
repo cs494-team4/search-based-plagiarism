@@ -5,19 +5,19 @@ from .RefactorOperator import RefactorOperator
 
 
 class OperatorToPow(RefactorOperator):
-    def __init__(self, codebase):
-        self.codebase = codebase
+    def __init__(self):
+
         self.targets = []
 
-    def apply(self, target):
+    def apply(self, codebase, target):
         replacer = OperatorToPowReplacer(target)
-        replacer.walk(self.codebase)
-        return self.codebase, replacer.applid
+        replacer.walk(codebase)
+        return codebase, replacer.applid
 
-    def search_targets(self):
+    def search_targets(self, codebase):
         candidates = list()
         searcher = SearchPowOp()
-        searcher.walk(self.codebase)
+        searcher.walk(codebase)
         candidates.extend(
             [target for target in searcher.targets])
         return candidates
@@ -35,7 +35,9 @@ class OperatorToPowReplacer(astor.TreeWalk):
         self.applied = False
 
     def pre_BinOp(self):
-        if id(self.cur_node) == self.target and OperatorToPow.is_applicable(self.cur_node):
+        if hasattr(self.cur_node, 'custom_id') \
+                and self.cur_node.custom_id == self.target \
+                and OperatorToPow.is_applicable(self.cur_node):
             self.applied = True
             self.replace(ast.Call(ast.Name("pow", ast.Store()), [self.cur_node.left, self.cur_node.right], []))
 

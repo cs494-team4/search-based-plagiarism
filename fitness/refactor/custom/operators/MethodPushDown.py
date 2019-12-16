@@ -6,23 +6,22 @@ from .RefactorOperator import RefactorOperator
 
 
 class MethodPushDown(RefactorOperator):
-    def __init__(self, codebase):
-        self.codebase = codebase
+    def __init__(self):
         self.known_classes = {}  # save (class_name, class_node)
         self.pushable_relations = {}  # save (parent_class_name, [id(child_node)])
         self.pushable_methods = {}  # save (id(child_node), method_node)
         self.targets = []  # save id(child_node), which is refactorable child
 
-    def apply(self, target):
+    def apply(self, codebase, target):
         replacer = PushMethodDownToChild(target, self.pushable_methods)
-        replacer.walk(self.codebase)
-        return self.codebase, replacer.applied
+        replacer.walk(codebase)
+        return codebase, replacer.applied
 
-    def search_targets(self):
+    def search_targets(self, codebase):
         candidates = list()
         searcher = SearchPushableRelation(self.known_classes, self.pushable_relations, self.pushable_methods,
-                                          self.codebase)
-        searcher.walk(self.codebase)
+                                          codebase)
+        searcher.walk(codebase)
         searcher.targets = list(self.pushable_methods.keys())
         candidates.extend(
             [target for target in searcher.targets])
@@ -68,7 +67,8 @@ class SearchPushableMethod(astor.TreeWalk):
         self.pushable_methods = pushable_methods
 
     def pre_ClassDef(self):
-        if id(self.cur_node) == self.target:
+        if hasattr(self.cur_node, 'custom_id') \
+                and self.cur_node.custom_id == self.target:
             parent_class = self.cur_node
             for body_item in parent_class.body:
                 # Not a method, skip
