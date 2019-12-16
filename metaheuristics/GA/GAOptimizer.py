@@ -14,10 +14,10 @@ from metaheuristics.FitnessOptimizer import FitnessOptimizer
 from utils import OrderedSet
 from utils.nsga import sortNondominated
 
-NUM_POP = 20
+NUM_POP = 10
 CXPB = 0.5
 MUTPB = 1
-NGEN = 20
+NGEN = 5
 INITIAL_SEQUENCE_LEN = 20
 
 
@@ -297,7 +297,7 @@ class GAOptimizer(FitnessOptimizer):
 
         for n in range(min(5, len(fronts_to_print))):
             plt.plot(fronts_to_print[n][:, 1], fronts_to_print[n][:, 0],
-                     colors[n], marker='o', markersize=6)
+                     colors[n], marker='o', markersize=6, linestyle='-')
 
         plt.title('Pareto Fronts of the last Generation')
         plt.xlabel('number of refactorings')
