@@ -1,3 +1,5 @@
 PyYAML
 mosspy
 astor
+numpy
+deap
