@@ -6,8 +6,12 @@ from .RefactorOperator import RefactorOperator
 '''
 Example:
 a,b = True
+print(1)
 if a and b:
-    print(1)
+    print(2)
+else: 
+    print(3)
+print(4)
 
 -->
 a,b = True
