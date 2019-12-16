@@ -21,7 +21,8 @@ class MossClient(SimilarityClient):
     def get_scores(self, original_file, refactored_files):
         similarity_values = list()
         for file in refactored_files:
-            similarity_values.append(self.get_binary_score(original_file, file))
+            similarity_values.append(
+                self.get_binary_score(original_file, file))
 
         return similarity_values
 
@@ -43,10 +44,8 @@ class MossClient(SimilarityClient):
 
         p = re.compile('\([0-9]+%\)')
         scores = [int(score[1:-2]) for score in p.findall(str(content))]
-
-        assert len(scores) == 2
+        if len(scores) == 0:
+            return 0
 
         # simply use refactored file's match score with regard to original file
         return scores[1]
-
-
