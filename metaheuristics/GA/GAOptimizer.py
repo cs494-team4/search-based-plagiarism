@@ -243,7 +243,11 @@ class GAOptimizer(FitnessOptimizer):
             plt.title('Pareto Fronts of the {} Generation'.format(g))
             plt.xlabel('number of refactorings')
             plt.ylabel('similarity score(%)')
-            plt.savefig('figs/{}_gen{}.png'.format(id(self.archive), g))
+            try:
+                plt.savefig('figs/{}_gen{}.png'.format(id(self.archive), g))
+            except FileNotFoundError:
+                os.makedirs('figs')
+                plt.savefig('figs/{}_gen{}.png'.format(id(self.archive), g))
 
         for g in range(start_gen, NGEN):
 
@@ -279,7 +283,7 @@ class GAOptimizer(FitnessOptimizer):
             fronts = sortNondominated(pop, k=len(pop))
             best_front = [pop[i] for i in fronts[0]]
             self.archive.extend(best_front)
-            if g % 10 == 0:
+            if (g+1) % 10 == 0:
                 show_plot('{}th'.format(g+1))
             # print(pop)
 
