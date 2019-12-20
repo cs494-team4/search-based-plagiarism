@@ -41,5 +41,8 @@ class RefactorFitness:
         return [(score, success_indicators[i])
                 for i, score in enumerate(self.similarity(self.codebase, refactored_codebases))]
 
+    def save_current_refactoring(self, info_message):
+        self.refactor.save_to_file(info_message)
+
     def __call__(self, *args, **kwargs):
         return self.evaluate(*args, **kwargs)

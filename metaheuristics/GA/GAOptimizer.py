@@ -5,7 +5,7 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 
-
+from deap.benchmarks.tools import hypervolume
 from deap import base
 from deap import creator
 from deap import tools
@@ -14,12 +14,12 @@ from metaheuristics.FitnessOptimizer import FitnessOptimizer
 from utils import OrderedSet
 from utils.nsga import sortNondominated
 
-### Feel free to update the hyperparameters if needed
-NUM_POP = 25                            #number of individual in population 
-CXPB = 0.5                              #crossover rate
-MUTPB = 0.7                             #mutation rate
-NGEN = 100                              #number of generation to go on
-INITIAL_SEQUENCE_LEN = 15               #length of genotype for each individual
+# Feel free to update the hyperparameters if needed
+NUM_POP = 25  # number of individual in population
+CXPB = 0.5  # crossover rate
+MUTPB = 0.7  # mutation rate
+NGEN = 100  # number of generation to go on
+INITIAL_SEQUENCE_LEN = 15  # length of genotype for each individual
 
 
 class FitnessCalculationException(Exception):
@@ -92,14 +92,22 @@ class GAOptimizer(FitnessOptimizer):
                 exit(0)
 
         best_fit = 10 ** 10
+        min_length = 10 ** 10
         best_ind = None
         for ind, fit in zip(pop, fitnesses):
             ind.fitness.values = fit
             if fit[0] < best_fit:
                 best_fit = fit[0]
+                min_length = fit[1]
                 best_ind = ind
+            elif fit[0] == best_fit:
+                if fit[1] < min_length:
+                    best_fit = fit[0]
+                    min_length = fit[1]
+                    best_ind = ind
 
         print('best fitness: {}'.format(best_fit))
+        print('minimum lenth of same best fitness: {}'.format(min_length))
         return [self.elements[index] for index in best_ind]
 
     def mate(self, individual1, individual2, indpb):
@@ -156,7 +164,7 @@ class GAOptimizer(FitnessOptimizer):
         mutations = [add_mutation, rm_mutation, ch_mutation]
         mutation = random.sample(mutations, 1)[0]
 
-        # print(str(mutation))
+        print(str(mutation))
         return mutation()
 
     def evaluate(self, individual):
@@ -204,11 +212,6 @@ class GAOptimizer(FitnessOptimizer):
 
         for ind, fit in zip(pop, fitnesses):
             ind.fitness.values = fit
-
-        # Compile statistics about the population
-        record = stats.compile(pop)
-        logbook.record(gen=0, evals=len(pop), **record)
-        # print("logbook stream of first: ", logbook.stream)
 
         def show_plot(g):
             fronts = sortNondominated(self.archive, k=len(self.archive))
@@ -289,10 +292,20 @@ class GAOptimizer(FitnessOptimizer):
 
             record = stats.compile(pop)
             logbook.record(gen=g+1, evals=len(offspring), **record)
-            # print("logbook stream: ", logbook.stream)
-            # print("lenpop: ", len(pop))
+
+            with open('logbook_{}.pkl'.format(id(logbook)), 'wb') as f:
+                pickle.dump(logbook, f)
+
+            # TODO: currently, save result of arbitrary individual in current population
+            self.fit.save_current_refactoring('gen_{}'.format(g+1))
+
+            with open('hypervolume.txt', 'a') as f:
+                f.write("%f\n" %
+                        hypervolume(pop, [100.0, 100.0]))
+
             average_fitness = sum(
                 map(lambda x: self.toolbox.evaluate(x)[0], pop)) / len(pop)
+
             if str(g)[-1] == '0':
                 print('Result of {}st generation: {}'.format(
                     g + 1, average_fitness))
@@ -322,7 +335,6 @@ class GAOptimizer(FitnessOptimizer):
                 else:
                     print('End of Evolution')
 
-        # plot pareto front
         self.archive.extend(pop)
 
         show_plot('last')

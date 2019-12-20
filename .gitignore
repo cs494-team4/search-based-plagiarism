@@ -6,3 +6,9 @@ venv/
 .idea/
 figs/
 figs_old/
+result/
+.vscode/
+
+*.pkl
+*.txt
+
