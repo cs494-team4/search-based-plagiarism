@@ -2,13 +2,16 @@
 
 ## Requirements
 
-Requires Python version `>=3.6`. Get all the other requirements using ```pip install -r requirements.txt``` in the root folder.
+Requires Python version `>=3.6`. 
+Get all the other requirements using ```pip install -r requirements.txt``` in the root folder.
 
 ## How to Run
 
-In the root folder, edit runPlagGen.py line 4 in order to set your project path. Note that a single python file is supported for this version of work. Modification of hyperparameters can be done in /metaheuristics/GA/GAOptimizer.py line 18 through 22. 
+In the root folder, edit `runPlagGen.py` line 4 in order to set your project path. Note that a single python file is supported for this version of work. Modification of hyperparameters can be done in `/metaheuristics/GA/GAOptimizer.py` line 18 through 22. 
 Then run the file to see tons of refactored codes being stored in /temp. 
+
 ```python3 runPlagGen```
+
 Running above code will take some time depending on your specifications, and will yield pareto front of the best individuals after it's done.
 
 ## Adding new refactorers
