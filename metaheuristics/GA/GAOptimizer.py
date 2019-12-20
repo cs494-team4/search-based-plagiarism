@@ -14,11 +14,12 @@ from metaheuristics.FitnessOptimizer import FitnessOptimizer
 from utils import OrderedSet
 from utils.nsga import sortNondominated
 
-NUM_POP = 25
-CXPB = 0.5
-MUTPB = 0.7
-NGEN = 100
-INITIAL_SEQUENCE_LEN = 15
+### Feel free to update the hyperparameters if needed
+NUM_POP = 25                            #number of individual in population 
+CXPB = 0.5                              #crossover rate
+MUTPB = 0.7                             #mutation rate
+NGEN = 100                              #number of generation to go on
+INITIAL_SEQUENCE_LEN = 15               #length of genotype for each individual
 
 
 class FitnessCalculationException(Exception):
